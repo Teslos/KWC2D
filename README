@@ -1,0 +1,6 @@
+This program calculates 2D grain growth using Kobayashi-Warren-Carter
+theory, described in Physica D: Nonlinear Phenomena Vol 140. Iss. 2, pp 141-150.
+
+In future I plan to add rudimentary fluid flow code to be able to simulate
+the rippening and segregation under flow regime.
+
