@@ -22,6 +22,7 @@ class Csim2d {
     int   NV;      // iteration number for implicit velocity solver.
     int   ND;      // iteration number for divergence in velocity solver.
     int   NTheta;  // iteration number for implicit theta field solver.
+	int   NF;      // iteration number for semi-implicit phase field solver.
 
     float NR0;     // relative number of particles.
     float NR;      // relative number of particles on start.
@@ -33,10 +34,13 @@ class Csim2d {
     float C_control; // sum of C (controlling conservation of conc.)
     float C_liquid;  // sum of cl*fl/sum(fl).
     float C_error;   // found error for implicit concentration solver.
+	float F_error;   // found error for semi-implicit phase solver.
+	float T_error;   // found error for implicit theta solver.
     float P_error;   // found error for implicit pressure solver.
     float V_error;   // found error for implicit velocity solver.
     float D_error;   // found error for divergence in V-solver.
     float d_C;       // allowed error for conc.solver.
+	float d_T;       // allowed error for theta solver.
     double FS;       // sum of p-field for control.
     float AG;        //
     float Curv;      // control value for middle curvature p-field.
@@ -161,14 +165,16 @@ public:
     int OutContr(int);
     int OutTmpp(int);
     int OutSimgeo(void);
-	int OutTec(int);
-	int OutMathematica(int);
+#ifdef __TECPLOT__
+    int OutTec(int);
+#endif
+    int OutMathematica(int);
     void OutConv(void);
-	int OutCoeff(void);
+    int OutCoeff(void);
 
     // public fields
     float *FracSolNew;
-	float *FSold;
+    float *FSold;
     float *ConcNew;
     float *FL;
     float *FLmx;
@@ -176,6 +182,9 @@ public:
     float *FSmx;
     float *FSmy;
     double *Theta;
+	double *T_over;
+	double *Dmbar;
+	double *Pbar;
     float *theta_over;
     double *Tmx;
     double *Tmy;
@@ -199,6 +208,7 @@ public:
     float *oneminus;
     float *C_over;
     float *D_FS;
+	float ALPHA;
 };
 
 struct CTime {
@@ -230,6 +240,9 @@ struct Dimension{
     int Nxz;
     int Nxyz;
 };
+
+extern "C" void slapsol_(double *ae, double *aw, double *an, double *as, double *ap,
+        double *b, double *u, int *ni, int *nj, int *maxit,char *method);
 
 //Csim2d *csim2d;
 // debug stuff

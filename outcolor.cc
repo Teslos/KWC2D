@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 #include <fstream>
 #include <math.h>
 #include <string.h>
@@ -154,7 +155,7 @@ int Csim2d::OutContr(int tstep)
 
     for (i = 0; i < numY; i++) {
         v_supery += CellInfo[sp].VY;
-        v_supery1 += abs(CellInfo[sp].VY);
+        v_supery1 += fabs(CellInfo[sp].VY);
         // jump to next line
         sp += 1;
     }
@@ -621,8 +622,10 @@ void Csim2d::OutConv(void)
 {
   cout << "#" << 10000*V_control << " " << V_error << " "
                << NV << " D " << D_error << " " << ND
+			   << " F " << F_error << " " << NF	   
                << " P " << P_error << " " << NP 
-               << " C " << C_error << " " << NC << endl;
+               << " C " << C_error << " " << NC
+			   << " T " << T_error << " " << NTheta	<<  endl;
   cout << "#frame moved by " << n_move << " gridpoints" << endl;
 }
     

@@ -27,13 +27,14 @@ Csim2d::SetPar(int R, int x0, int y0, float theta0)
                 Index  = DimInfo->Nx + 1;
                 Index += j + i * (DimInfo->Nx);
                 fsini  = r - (float)(R);
-                //fsini *= 3. * LengthX / Delta;
-				fsini *= LengthX / Delta;
+                fsini *= 3. * LengthX / Delta;
+				//fsini *= LengthX / Delta;
                 fsini  = tanh(fsini);
                 fsini *= -0.5;
                 fsini += 0.5;
                 if (fsini > .99)
                     fsini = .99;
+				
                 CellInfo[Index].FracSol = fsini;
 				FL[Index] = 1. - fsini;
             }
@@ -42,8 +43,8 @@ Csim2d::SetPar(int R, int x0, int y0, float theta0)
                 Index = DimInfo->Nx + 1;
                 Index += j + i * (DimInfo->Nx);
                 ftheta = r - (float) (R);
-                //ftheta *= 3. * LengthX / epsilonL;
-				ftheta *= LengthX / epsilonL;
+                ftheta *= 3. * LengthX / epsilonL;
+				//ftheta *= LengthX / epsilonL;
                 ftheta = tanh(ftheta);
                 ftheta *= -0.5*theta0;
                 ftheta += 0.5*theta0;
@@ -107,8 +108,8 @@ Csim2d::InitBound(void)
 
     // and now set one more time particles to refresh concentration
     for (i = 1; i < Radius[0] + 1; i++) {
-        SetPar(Radius[i], x0[i], y0[i], theta0[i]);
-    }
+		    SetPar(Radius[i], x0[i], y0[i], theta0[i]);
+	}
 	//exit(0);
 
     // XXX and finally setting of average values of fl at cell-boundries
@@ -228,7 +229,8 @@ Csim2d::InitRegion(istream &input)
     input >> ATC;
     cout << "#" << ATC << endl;
 
-    // Additional parameters for KWC model
+    // Additional parameters for KWC model - 30.01 -currently disabled
+	
     cout << "# Phase field gradient energy coefficient (float)" << endl;
     input >> alfa;
     cout << "#" << alfa << endl;
@@ -256,7 +258,7 @@ Csim2d::InitRegion(istream &input)
     cout << "# infinity diffusive constant (float)" << endl;
     input >> gamma;
     cout << "#" << gamma << endl;
-
+	
     // particle informations and statistics of starting conditions.
     // number of particles is saved in 0 component.
 
@@ -310,9 +312,12 @@ Csim2d::InitRegion(istream &input)
     cout << "#" << Div << endl;
 
     // set the values
+	d_T = d_C;   // relative error for theta and conc. are same 
     AG = 0.;
     FS = 0.;
     NC = 0;
+	NTheta = 0;
+	NF = 0;
     V_control = 0.00001;
     n_move = 0;
     Ymax_Pos = 0;
@@ -537,6 +542,17 @@ Csim2d::InitTemperature(void)
         return -1;
     }
 
+	Dmbar = new double[DimInfo->Nxy];
+	if (Dmbar == NULL) {
+		cerr << "Error allocating memory for: Dmbar" << endl;
+		return -1;
+	}
+	
+	Pbar = new double[DimInfo->Nxy];
+	if (Pbar == NULL) {
+		cerr << "Error allocating memory for: Pbar" << endl;
+		return -1;
+	}
     oneminus = new float[DimInfo->Nxy];
     if (oneminus == NULL) {
         cerr << "Error allocating memory for: oneminus" << endl;
@@ -548,6 +564,12 @@ Csim2d::InitTemperature(void)
         cerr << "Error allocating memory for: C_over" << endl;
         return -1;
     }
+	
+	T_over = new double[DimInfo->Nxy];
+	if (T_over == NULL) {
+		cerr << "Error allocating memory for: T_over" << endl;
+		return -1;
+	}
 
     KKonv = new float[DimInfo->Nxy];
     if (KKonv == NULL) {
@@ -628,5 +650,6 @@ bool
 Csim2d::StabilCond()
 {
     float XQuadrat = LengthX * LengthX;
-    return TimeInfo->tWidth < tauTheta / (alfa * alfa) * XQuadrat * 0.25; 
+    //return TimeInfo->tWidth < tauTheta / (alfa * alfa) * XQuadrat * 0.25; 
+	return true;
 }

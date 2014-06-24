@@ -23,7 +23,9 @@ void Csim2d::CpX(int ysrc, int ydst)
         CellInfo[dp].FracSol = CellInfo[sp].FracSol;
         FracSolNew[dp] = FracSolNew[sp];
         FL[dp] = FL[sp];
-
+		// 24.06.14 added a new theta field which also goes into phase field equation
+        //CellInfo[dp].Theta = CellInfo[sp].Theta;
+        Theta[dp] = Theta[sp];
         // increase index
         sp++;
         dp++;
@@ -43,6 +45,9 @@ void Csim2d::CpY(int xsrc, int xdst)
         CellInfo[dp].FracSol = CellInfo[sp].FracSol;
         FracSolNew[dp] = FracSolNew[sp];
         FL[dp] = FL[sp];
+		// 24.06.14 added a new theta field which also goes into phase field equation
+        //CellInfo[dp].Theta = CellInfo[sp].Theta;
+        Theta[dp] = Theta[sp];
         sp += DimInfo->Nx;
         dp += DimInfo->Nx;
     }
@@ -353,7 +358,9 @@ void Csim2d::CpThX(int ysrc, int ydst)
     for (i = 0; i < DimInfo->Nx; i++) {
         CellInfo[dp].Theta = CellInfo[sp].Theta;
         Theta[dp] = Theta[sp];
-
+		// added 24.06.14 liquid fraction necessary to calculate 
+		// theta field.
+		FL[dp] = FL[sp];
         // increase index
         sp++;
         dp++;
@@ -372,6 +379,7 @@ void Csim2d::CpThY(int xsrc, int xdst)
     for (i = 0; i < DimInfo->Ny; i++) {
         CellInfo[dp].Theta = CellInfo[sp].Theta;
         Theta[dp] = Theta[sp];
+		FL[dp] = FL[sp];
         sp += DimInfo->Nx;
         dp += DimInfo->Nx;
     }

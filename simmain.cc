@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include "sim2d.h"
 using namespace std;
 
@@ -91,6 +92,10 @@ main(int argc, char **argv)
    cout << "# After how many timesteps are convergence values written out" << endl;
    cin >> WriteInterval2;
    cout << "#" << WriteInterval2 << endl;
+   cout << "# Set SOR parameter to optimize convergence" << endl;
+   cin >> csim2d->ALPHA;
+   cout << "#" << csim2d->ALPHA << endl;
+   
    // now we can start for t_steps we will solve fields in complete region
    cout << "# Output: Timestep (filter) and Control values:" << endl;
    cout << "#t,Dvy/Dvx/Dv/Vmax/ytip/xtip/v/rho/s*/Pe/Utp/Otp/FS/iface/Cav"
@@ -113,7 +118,9 @@ main(int argc, char **argv)
        if ((i % WriteInterval) == 0) {
            cout << "# *** Timestep " << i << " ***" << endl;
            RetVal = csim2d->OutTmpp(i);
-		   RetVal = csim2d->OutTec(i);
+#ifdef __TECPLOT__
+ 	   RetVal = csim2d->OutTec(i);
+#endif
            if (RetVal < 0) {
                cerr << "Error in writing output data" << endl;
                exit(-1);

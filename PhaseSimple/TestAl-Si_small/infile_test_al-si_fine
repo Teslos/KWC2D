@@ -1,0 +1,105 @@
+#######################
+#
+# Bereichsinformationen
+#
+#######################
+#  Zellgroesse in Zentimetern (float)
+#  fuer x?
+0.0000200
+#  fuer y?
+0.0000200
+#  fuer z?
+0.0000200
+# Anzahl der Zellen...(int)
+#  in x-Richtung?
+200
+#  in y-Richtung?
+200
+#  in z-Richtung?
+1
+#  Maximale Hoehe solid (moving frame)
+563
+# Steigung der Liquiduslinie im Phasendiagramm [K/%] (float)
+2.600000
+# Globale Anfangskonzentration C0 [%] (float)
+4.000000
+# Segregationskoeffizient k (float)
+0.130000
+# Diffusionskoeffizient liquid [cm^2/s] (float)
+0.000030
+# Diffusionskoeffizient solid [cm^2/s] (float)
+3.e-9
+# Abbruchbedingung fuer Fraktion Liquid gegen 1       (float)
+0.950000
+# Waermeleitfaehigkeit Matrix? [W/cm/K] (float)
+0.950000
+# spez. Waerme (rho_cp) der Matrix? [J/ccm/K] (float)
+2.580000
+#Waermeleitfaehigkeit Partikel? [W/cm/K] (float)
+0.000000
+#spez. Waerme (rho_cp) des Partikels? [J/ccm/K] (float)
+0.000000
+# latente Waerme der Matrix [J/ccm] (float)
+0.000000
+# Die latente Waerme des Partikels wird automatisch =0 gesetzt
+#
+# Schmelztemperatur der Matrix [K] (float)
+933.6
+# TPunkt (zur Waermeabfuhr pro Zeit) [K/s]
+0.400
+# Anfangstemperatur am unteren Rand [K]  (float)
+921.5
+# Temperaturgradient ueber Rechenbereich [K/cm] (float)
+# Der Gradient bleibt an den Enden des Rechenbereichs erhalten
+100.000000
+# Delta - iface-Dicke [cm]   (float)
+0.0002
+# Mobilitaet Phasengrenze [cm/s/K]  (float)
+1000.0100
+# Gibbs-Thomson Coeef. [K cm] (float)
+0.000020
+# Ausschlag kinetische anisotropie (float)
+0.0
+# Ausschlag grenzfl-anisotropie (float)
+0.02
+# Antitrappung wichting
+0.1666666
+# Anzahl der Partikel (<100)
+1
+#Jetzt 1 Partikel als Radius x-Koordin. y-Koordin eingeben
+#1.Partikel (Radius, x_M, y_Mi, theta)
+9	0   0  0
+# Normaldruck (float)[N/m^2]
+0.000000
+# Druckgradient pro cm (float)[N/m^2/cm]
+0.000000
+# Dichte im Liquid (float) [g/cm^3]
+2.475000
+# Variation of density with concentration (float) [1./%]
+-0.010000
+# Viskositaet der Schmelze(float)[cm^2/s]
+0.005700
+# Stoergeschwindigkeit inmitten der Scmelze (float)[cm/s]
+0.000000
+# Gewichtungsfaktor fuer Kozeny Karman (float)
+1.290000
+# Accepted relativ error in C-extimation (float)
+0.000002
+# Accepted relativ error in V-extimation  (float)
+0.0050000
+#######################
+#######################
+#
+# Zeitinformationen
+#
+#######################
+# Zeitschrittweite ? [Sekunden] (float)
+0.00015
+# Wieviele Zeitschritte ?  (int)
+45001
+# Fuer den wievielten Zeitschritt sollen Loesungen geschrieben werden?
+250
+# Fuer den wievielten Zeitschritt sollen Kontrollwerte geschrieben werden?
+30
+# Fuer den wievielten Zeitschritt sollen Konvergenzwerte geschrieben werden?
+50

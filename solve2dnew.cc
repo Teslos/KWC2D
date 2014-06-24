@@ -1,3 +1,11 @@
+/*
+*	After trying to solve concentration equation using different solvers, 
+*   decision is made to return to iterative Gauss-Seidel method which 
+*	showed as stable for concentration solutions, until better method is found.
+*
+*   Simpler test with the Gauss-Seidel method using normal diffusion equation
+*	solves theta equation. So Gauss-Seidel method is working correctly. 
+*/
 #include <iostream>
 #include <math.h>
 
@@ -107,10 +115,10 @@ int CGM(double *ae, double *aw, double *an, double *as, double *ap, double *b, d
         its = cghs(M,A,b,u,EPS);
         break;
         case BICGSQ:
-        its = bicgsq(M,A,b,u,EPS);
+        //its = bicgsq(M,A,b,u,EPS);
         break;
         case BICGSTAB:
-        its = bicgstab(M,A,b,u,EPS);
+        //its = bicgstab(M,A,b,u,EPS);
         break;
         case GMRES:
         its = gmres(m,M,A,b,u,EPS);
@@ -144,10 +152,10 @@ void CGM(double *ae, double *aw, double *an, double *as, double *ane, double *an
         its = cghs(M,A,b,u,EPS);
         break;
         case BICGSQ:
-        its = bicgsq(M,A,b,u,EPS);
+        //its = bicgsq(M,A,b,u,EPS);
         break;
         case BICGSTAB:
-        its = bicgstab(M,A,b,u,EPS);
+        //its = bicgstab(M,A,b,u,EPS);
         break;
         case GMRES:
         its = gmres(m,M,A,b,u,EPS);
@@ -160,6 +168,12 @@ void CGM(double *ae, double *aw, double *an, double *as, double *ane, double *an
         " difference is " << EPS << endl;
     //for (int i=0; i < M; i++) x[i] = u[i];
     
+}
+
+void slapsol(double *ae, double *aw, double *an, double *as, double *ap, double *b, double *u, int ni, int nj, int maxit)
+{
+    char *method;
+    slapsol_(ae,aw,an,as,ap,b,u,&ni,&nj,&maxit,method);
 }
 
 int 
@@ -327,25 +341,27 @@ Csim2d::Agamma(double zeta)
         return zeta - 1./(2.*gamma);
 }
 
+// subtitute now returns correction term
+// this is described in eq (A.29) Acta Materialia 51 (2003) 6035–6058.
 inline double 
 Csim2d::Subt(double Theta)
 {
     if (-PI <= Theta && Theta < PI)
-        return Theta;
+        return 0.0;
     else if (Theta < -PI)
-        return Theta+PI2;
+        return PI2;
     else if (Theta > PI)
-        return Theta-PI2;
+        return -PI2;
     return Theta; // this is liquid 
 }
 
 inline double 
 Csim2d::P(double w)
 {
-    double t = exp(-beta*w);
+    double t = exp(-beta * w);
 	//cout << " P value is : " << 1.<< endl;
-    //return 1.-t+mu/epsilonL*t;
-	return 1.;
+    return 1. - t + (mu / epsilonL) * t;
+	//return 1.;
 }
 
 int
@@ -357,63 +373,69 @@ Csim2d::solve2d(void)
     int i,j;
     float x_maxPos = 0, y_maxPos = 0; 
     // coefficients of the "stiffness" matrix
-    double atc = 0., center = 0.;
+    double atc = 0., center = 0.,
+		   dpxl = 0., dpxu = 0., dpxd = 0., dpxr = 0., dpyr = 0., 
+		   dpyl = 0., dpyu = 0., dpyd = 0., normr = 0., 
+		   norml = 0., normu = 0., normd = 0.;
     double poly = 0.0,
            phi_x = 0.0,
            phi_y = 0.0,
            phi_xx = 0.0,
            phi_yy = 0.0,
            phi_xy = 0.0, co = 0., si = 0., thx = 0., thy = 0., anis = 0.;
-    float FSold = 0.;
-    float FSNew = 0.;
-    float laplace = 0.;
-    float norm2 = 0.;
-    float norm2R = 0.;
+    double FSold = 0.;
+    double FSNew = 0.;
+	double CNew  = 0.;
+	double Tnew  = 0.;
+    double laplace = 0.;
+    double norm2 = 0.;
+    double norm2R = 0.;
+	double error = 0.;
 
     // calculate values
-    float deltaR = 1. / Delta;
-    float deltaQR = 72. /(Delta * Delta);
-    float dt_mobil = TimeInfo->tWidth * mobil;
-    float a12 = 0.6267 * 5. / 24. ;
+    double deltaR = 1. / Delta;
+    double deltaQR = 72. /(Delta * Delta);
+    double dt_mobil = TimeInfo->tWidth * mobil;
+    double a12 = 0.6267 * 5. / 24. ;
     a12 *= Delta * ML * (1. - k) / DC[1];
-    float VMax = V_control;
+    double VMax = V_control;
 
     // calculate reciprocal quadrats
-    float XR = 1. / LengthX;
-    float twoXR = 0.5 * XR;
-    float YR = 1. / LengthY;
-    float TR = 1. / TimeInfo->tWidth;
+    double XR = 1. / LengthX;
+    double twoXR = 0.5 * XR;
+    double YR = 1. / LengthY;
+    double TR = 1. / TimeInfo->tWidth;
 
-    float XRQuadrat = XR * XR;
-    float YRQuadrat = YR * YR;
+    double XRQuadrat = XR * XR;
+    double YRQuadrat = YR * YR;
 
-    float fourXRQuadrat = XRQuadrat * 0.25;
-    float atcm = 0.5 * ATC * Delta * XR * TR;
+    double fourXRQuadrat = XRQuadrat * 0.25;
+    double atcm = 0.5 * ATC * Delta * XR * TR;
 
-    float epsilonLQ = epsilonL * epsilonL;
-    float alfaQ = alfa * alfa;
+    double epsilonLQ = epsilonL * epsilonL;
+    double alfaQ = alfa * alfa;
 
     int Nx = DimInfo->Nx;
     int Ny = DimInfo->Ny;
     int Nxy = DimInfo->Nxy;
 
-    float Dsk = k * DC[0];
-    float Dls = DC[1] - Dsk;
-    float p = 1. - k;
+    double Dsk = k * DC[0];
+    double Dls = DC[1] - Dsk;
+    double p = 1. - k;
     
-    float KV1 = TimeInfo->tWidth;
+    double KV1 = TimeInfo->tWidth;
     KV1 *= XRQuadrat;
     KV1 *= my;
 
-    float kp1 = -LengthX * LengthX * Rho * TR;
-    float kp1R = 1. / kp1;
-    float kp2 = TimeInfo->tWidth / (Rho * LengthX);
+    double kp1 = -LengthX * LengthX * Rho * TR;
+    double kp1R = 1. / kp1;
+    double kp2 = TimeInfo->tWidth / (Rho * LengthX);
 
     // summing up all liquid contributions for averaging liquid conc */
     // reset the old values
-    float C_LA = 0.;
-    float S_FL = 0.;
-    float S_d_FS = 0.;
+    double C_LA = 0.;
+    double S_FL = 0.;
+    double S_d_FS = 0.;
     int l      = 0;
 
     // reset all the coefficients
@@ -421,8 +443,8 @@ Csim2d::solve2d(void)
     
     int Index = Nx + 1;
     for (i = 0; i < numY; i++) {
-        float C_LAR = 0.;
-        float S_LAR = 0.;
+        double C_LAR = 0.;
+        double S_LAR = 0.;
         for (j = 0; j < numX; j++) {
             Index = Nx * (i + 1) + j + 1;
             if (FL[Index] > .5) {
@@ -435,7 +457,29 @@ Csim2d::solve2d(void)
     }
     C_LA /= (double) l;
     S_FL /= (double) l;
+	
+	// first test values
+	/*fprintf(stdout,"FLmx, FLmy\n");
+	for (i = 0; i < Nxy; i++) {
+		fprintf(stdout, "%i: %lf %lf\n", i, FLmx[i], FLmy[i]);
+	}*/
+	
+	
+	// start point for flmx: right down and then one row up 
+	Index = 2 * Nx - 1;
+    for (i = 0; i < Ny; i++) {
+        FLmx[Index] = .5 * (FL[Index] + FL[Index - 1]);
+        Index += Nx;
+    }
 
+	// start point for flmy: left up and then right up
+	// correction: 19.02.14 Ny is now numY
+    Index = Nx * (numY + 1) + 1;
+    for (i = 0; i < Nx; i++) {
+        FLmy[Index] = .5 * (FL[Index] + FL[Index - Nx]);
+        Index++;
+    }
+	
     // calculate fraction liquid at middle of the cell edge(x-dir).
     for (i = 1; i < Nxy; i++) {
         FLmx[i] = .5 * (FL[i] + FL[i-1]);
@@ -448,24 +492,35 @@ Csim2d::solve2d(void)
         FSmy[i] = 1.-FLmy[i];
     }
 
+	// write test values
+	/*for (i = 0; i < Nxy; i++) {
+		fprintf(stdout, "%i %lf %lf\n", i, FLmx[i], FLmy[i]);
+	}
+		
+	exit(1);*/
     // calculate gradient of theta at middle of cell edge Tmx:
     // absolute value of Tmx is calculated.
     for (i = 1; i < Nxy; i++) {
         Tmx[i] = CellInfo[i].Theta-CellInfo[i-1].Theta;
         Cmx[i] = Subt(Tmx[i]);
-        Tmx[i] *= XR;
+        Tmx[i] += Cmx[i];
+		Tmx[i] *= XR;
         Tmx[i] = fabs(Tmx[i]);
+		//cout << "Tmx[" << i << "]=" << Tmx[i] << " Theta[" << i << "]=" << CellInfo[i].Theta 
+		//		<< " Theta[" << i-1 << "]=" << CellInfo[i-1].Theta << " XR="<< XR << endl;
     }
-
+	
     // calculate gradient of theta at middle of cell edge Tmy: 
     // absolute value of Tmy is calculated.
     for (i = Nx+1; i < Nxy; i++) {
         Tmy[i] = CellInfo[i].Theta-CellInfo[i-Nx].Theta;
         Cmy[i] = Subt(Tmy[i]);
-        Tmy[i] *= XR;
+        Tmy[i] += Cmy[i];
+		Tmy[i] *= XR;
         Tmy[i] = fabs(Tmy[i]);
+		//cout << "Tmy[" << i <<"]=" << Tmy[i]<< " Theta[" << i << "]=" << CellInfo[i].Theta << endl;
     }
-
+	//exit(-1);
     
     // friction term as function of frac-liquid in calculation of 
     // implicit solver for Velocity.
@@ -496,6 +551,8 @@ Csim2d::solve2d(void)
             float TM = Tmelt - ML * CellInfo[Index].Conc;
             float U  = (TM - (T_D + i * TGrad));
 			float Mpoly = FSold - 0.5 + sigma * FSold * (1. - FSold);
+			// correction 30.01.14 poly was not defined 
+			poly = FSold * ( 1. - FSold );
             FSNew = CellInfo[Index+1].FracSol - FSold;
             FSNew += CellInfo[Index-1].FracSol - FSold;
             FSNew += CellInfo[Index+Nx].FracSol - FSold;
@@ -525,16 +582,19 @@ Csim2d::solve2d(void)
                 phi_xy = CellInfo[Index+Nx+1].FracSol + CellInfo[Index-Nx-1].FracSol
                     - CellInfo[Index+Nx-1].FracSol - CellInfo[Index-Nx+1].FracSol;
                 phi_xy *= fourXRQuadrat;
-                si = 4. *(phi_x * phi_x * phi_x * phi_y - phi_y * phi_y * phi_x)
+				// correction 31.01.14 added phi_y to second term
+                si = 4. *(phi_x * phi_x * phi_x * phi_y - phi_y * phi_y * phi_y * phi_x)
                     * norm2R * norm2R;
-                co = 1. - 8.*phi_x*phi_x*phi_y*phi_y*norm2R*norm2R;
-                thx = phi_x*phi_xy-phi_y*phi_xx;
+                co = 1. - 8. * phi_x * phi_x * phi_y * phi_y * norm2R * norm2R;
+                thx = phi_x * phi_xy - phi_y * phi_xx;
                 thx *= norm2R;
-                thy = phi_x*phi_yy-phi_y*phi_yy;
+				// correction 31.01.14 changed phi_yy to phi_xy
+                thy = phi_x * phi_yy - phi_y * phi_xy;
                 thy *= norm2R;
-                anis  = co*(2.+epssigma*co)*laplace;
-                anis -= 8.*si*(1. + epssigma*co)*(thx*phi_x + thy*phi_y);
-                anis -= 16. *(co + epssigma*(co*co-si*si))*(thy*phi_x - thx*phi_y);
+                anis  = co * (2. + epssigma * co) * laplace;
+				// anis  = co * (2. + epssigma * co) * (phi_xx + phi_yy);
+                anis -= 8. * si * (1. + epssigma * co) * (thx * phi_x + thy * phi_y);
+                anis -= 16. * (co + epssigma * (co * co - si * si)) * (thy * phi_x - thx * phi_y);
                 anis *= epssigma;
                 
             }
@@ -542,7 +602,7 @@ Csim2d::solve2d(void)
                 anis = 0;
                 co   = 0;
             }
-            /*
+			
             FSNew += anis;
             FSNew += poly * (FSold - 0.5) * deltaQR;
             FSNew *= Gamma;
@@ -555,7 +615,10 @@ Csim2d::solve2d(void)
             FSNew += FSold;  
             FracSolNew[Index] = FSNew;
 
-            */
+            // for now eliminate theta contributions
+            // xxx testing
+			
+			/*
             FSNew *= alfaQ;
             FSNew += FSold * tauPhi * TR;
             stheta = sqrt(Tmx[Index]*Tmx[Index]+Tmy[Index]*Tmy[Index]);
@@ -571,6 +634,7 @@ Csim2d::solve2d(void)
             }
             FSNew /= theta_over[Index];
             FracSolNew[Index] = FSNew;
+			*/
             Index++;
         }
         Index += 2;
@@ -579,12 +643,13 @@ Csim2d::solve2d(void)
     //CGM(ae, aw, an, as, ane, anw, ase, asw, ap, b, u, Nx, Ny, maxit, GMRES);
 #ifndef DEBUG
     //CGM(ae, aw, an, as, ap, b, u, Nx, Ny, maxit, CGHS);
-	//this->OutMathematica(1);
-	//exit(-1);
+    //this->OutMathematica(1);
+    //exit(-1);
 #endif
 //#else
 //    NC = DNAG(ae, aw, an, as, ap, b, u, Nx, Ny, maxit, 0);
 //#endif
+	
     // copy for now results in FracSolNew
     Index = (Nx+1);
     for (i = 0; i < numY; i++) {
@@ -627,68 +692,158 @@ Csim2d::solve2d(void)
         for (j = 0; j < numX; j++) {
             Dmx[Index] = FSmx[Index] * FSmx[Index] * (s*Igamma(Tmx[Index])+epsilonLQ);
             Dmy[Index] = FSmy[Index] * FSmy[Index] * (s*Igamma(Tmy[Index])+epsilonLQ);
+			//cout << "Dmx["<<Index<<"]="<<Dmx[Index]<< endl;
+            //cout << "Dmy["<<Index<<"]="<<Dmy[Index]<< endl;
+			// testing 
+			//Dmx[Index] = 0.5E-4;
+			//Dmy[Index] = 0.5E-4;
+			Index++;
+        }
+        Index += 2;
+    }
+	//exit(-1);
+	double gTmx = 0.;
+	double gTmy = 0.;
+	Index = (Nx+1);
+    for (i = 0; i < numY; i++) {
+        for (j = 0; j < numX; j++) {
+			// add small constant to fract.solid 
+			FracSolNew[Index] += FSMALL;
+            Dmbar[Index] = (Dmx[Index]+Dmx[Index+1]+Dmy[Index]+Dmy[Index+Nx]);
+			Dmbar[Index] *= XRQuadrat;
+			// gradient at center 
+			gTmx = .5 * (Tmx[Index] + Tmx[Index+1]);
+			gTmy = .5 * (Tmy[Index] + Tmy[Index+Nx]);
+			
+			Dmbar[Index] += P(epsilonL*sqrt(gTmx*gTmx + gTmy*gTmy)) *
+					FracSolNew[Index]*FracSolNew[Index]*TR*tauTheta;
+			//cout << "I have tshirt"<<endl;
+			Pbar[Index] = P(epsilonL*sqrt(gTmx*gTmx + gTmy*gTmy)) 
+						* FracSolNew[Index]*FracSolNew[Index];
+			//testing
+			//Dmbar[Index] += TR;
+			T_over[Index] = 1. / Dmbar[Index];
+			//cout << "Dmbar["<<Index<<"]="<<Dmbar[Index]<< endl;
+            //cout << "T_over["<<Index<<"]="<<T_over[Index]<< " Dmx["<< Index <<"]="<< 
+			//			Dmx[Index]<< " Dmx["<< Index+1 <<"]="<< 
+			//			Dmy[Index+1] << " Dmy["<< Index <<"]="<< 
+			//			Dmy[Index]<< " Dmy["<< Index+Nx <<"]="<< 
+			//			Dmy[Index+Nx]<< " P=" << P(epsilonL*sqrt(Tmx[Index]*Tmx[Index]+Tmy[Index]*Tmy[Index])) << 
+			//			" FracSolSq= " << FracSolNew[Index]*FracSolNew[Index] << endl;
             Index++;
         }
         Index += 2;
     }
-    
+	//exit(-1);
     // 2. part solve phase field theta(orientation)
-    Index = (Nx+1);
-    for (i = 0; i < numY; i++) {
-        for (j = 0; j < numX; j++) {
-            FSold = FracSolNew[Index]+FSMALL; 
-            aw[Index] = -Dmx[Index];
-            aw[Index] *= XRQuadrat;
-            ae[Index] = -Dmx[Index+1];
-            ae[Index] *= XRQuadrat;
-            as[Index] = -Dmy[Index];
-            as[Index] *= XRQuadrat;
-            an[Index] = -Dmy[Index+Nx];
-            an[Index] *= XRQuadrat;
-
-            ap[Index] = (Dmx[Index]+Dmx[Index+1]+Dmy[Index]+Dmy[Index+Nx]);
-            ap[Index] *= XRQuadrat;
-
-			double polysq = FSold*FSold
-				*P(epsilonL*sqrt(Tmx[Index]*Tmx[Index]+Tmy[Index]*Tmy[Index]))*tauTheta*TR;
-			ap[Index] += polysq;
-			// cout << "Poly:" << polysq << endl;
-			double corr = -Cmx[Index]*Dmx[Index]+Cmx[Index+1]*Dmx[Index+1]
-			-Cmy[Index]*Dmy[Index]+Cmy[Index+Nx]*Dmy[Index+Nx];
-			corr *= XRQuadrat;
-			// XXX this only for test case
-			//corr = 0.0;
-
-			b[Index] = polysq * CellInfo[Index].Theta + corr;
-			Index++;
+	n = 0;
+	do{
+		Index = (Nx+1);
+		T_error = 0.0;
+		for (i = 0; i < numY; i++) {
+			for (j = 0; j < numX; j++) {
+				Tnew =  Theta[Index + 1] * Dmx[Index + 1];
+				Tnew += Theta[Index - 1] * Dmx[Index];
+				Tnew += Theta[Index - Nx] * Dmy[Index];
+				Tnew += Theta[Index + Nx] * Dmy[Index + Nx];
+				Tnew *= XRQuadrat;
+			
+				Tnew += tauTheta * TR * Pbar[Index] * CellInfo[Index].Theta;
+				// added 19.02.14 additional corrections terms
+				Tnew += (Cmx[Index + 1]*Dmx[Index + 1] - Cmx[Index]*Dmx[Index] 
+						- Cmy[Index] * Dmx[Index] + Cmy[Index + Nx] * Dmy[Index + Nx])*XRQuadrat;
+				
+				// testing
+				//Tnew += CellInfo[Index].Theta * TR;
+				Tnew *= T_over[Index];
+				// use Succesive Overrelaxation 
+				Tnew *= ALPHA;
+				Tnew += Theta[Index]*(1.-ALPHA);
+			
+				Theta[Index] = Tnew;	
+				Index++;
+			}
+			Index += 2;
 		}
-        Index += 2;
-    }
-    ExtrudTh();
+		ExtrudTh();
+		
+		// loop backwarts for error minimazing 
+		Index = (Nxy - 2 - Nx);
+		for (i = 0; i < numY; i++) {
+			for (j = 0; j < numX; j++) {
+				Tnew =  Theta[Index + 1] *  Dmx[Index + 1];
+				Tnew += Theta[Index - 1] *  Dmx[Index];
+				Tnew += Theta[Index - Nx] * Dmy[Index];
+				Tnew += Theta[Index + Nx] * Dmy[Index + Nx];
+				Tnew *= XRQuadrat;
+			
+				// correction 19.02. CellInfo[i] ->  CellInfo[Index]
+				Tnew += tauTheta * TR * Pbar[Index] * CellInfo[Index].Theta;
+				
+				Tnew += (Cmx[Index + 1] * Dmx[Index + 1] - Cmx[Index] * Dmx[Index] 
+						- Cmy[Index] * Dmx[Index] + Cmy[Index + Nx] * Dmy[Index + Nx])*XRQuadrat;
+				
+				//Tnew += CellInfo[Index].Theta * TR;
+				Tnew *= T_over[Index];
+				Tnew *= ALPHA;
+				Tnew += Theta[Index]*(1.-ALPHA);
+				// Estimation of maximum relativ error againg last iteration step
+				error = fabs(( Tnew - Theta[Index] ) / (Tnew + 1e-10)); // guard against overflow
+				//fprintf(stdout, " Error : %f , Tnew: %lf, Theta[%i]: %lf\n", error, Tnew, Index, Theta[Index]);
+				T_error = (T_error > error) ? T_error : error;
+				
+				Theta[Index] = Tnew;
+				Index--;
+			}
+			Index -= 2;
+		}
+		
+		n++;
+		ExtrudTh();
+		//fprintf(stdout, " T_error: %lf\n", T_error);
+	} while (T_error > d_T /*&& n < .5 * sqrt(Nxy)*/ );
+	NTheta = n;
+	n = 0;
+	
+	//fprintf(stdout, " T_error: %lf \n", T_error);
+	//exit(-1);
     // now solve for theta field
-	//this->OutCoeff();
+    //this->OutCoeff();
+    //exit(-1);
 #ifndef DEBUG
     //NTheta = CGM(ae, aw, an, as, ap, b, Theta, Nx, Ny, maxit, GMRES);
-	
+#ifdef __NAG__	
     // using nag solver for the moment
-    NAGSOL(ae, aw, an, as, ap, b, Theta, Nx, Ny, "RGMRES", "CompletePiv", "UnModFact", maxit);
-	//this->OutMathematica(1);
-	//exit(-1);
+    // NAGSOL(ae, aw, an, as, ap, b, Theta, Nx, Ny, "RGMRES", "CompletePiv", "UnModFact", maxit);
+#endif
+    /*
+    for(i = 0; i < 25; i++) {
+        ap[i] = 4.0;
+        aw[i] = 1.0; ae[i] = 2.0;
+        as[i] = -1.0; an[i] = 1.0;
+        b[i] = 6.0;
+    }
+    */
+    //this->OutMathematica(1);
+    //exit(-1);
+
+    //slapsol(ae, aw, an, as, ap, b, Theta, Nx, Ny, maxit);
+
 #else
-    printout(ae, aw, an, as, ap, b, Nx, Ny);
-    NTheta = DNAG(ae, aw, an, as, ap, b, Theta, Nx, Ny, maxit, 0);
+    //printout(ae, aw, an, as, ap, b, Nx, Ny);
+    //NTheta = DNAG(ae, aw, an, as, ap, b, Theta, Nx, Ny, maxit, 0);
 #endif
 
-//#ifdef bla
     // calculate concentration
     // 1. part calculate constants
-    Index = (Nx+1);
+    Index = (Nx + 1);
     for (i = 0; i < numY; i++) {
         for (j = 0; j < numX; j++) {
             // go with new FSnew or with middle value between old and new timestep
-            oneminus[Index] = 1. - p * (CellInfo[Index].FracSol + FracSolNew[Index])*0.5;
-            Dbar[Index] = (FLmx[Index+1] + FLmx[Index] + FLmy[Index+Nx] +
-                    FLmy[Index-Nx]);
+            oneminus[Index] = 1. - p * ( CellInfo[Index].FracSol + FracSolNew[Index] ) * 0.5;
+			// correction 29.01.14 FLmy[Index - Nx]->FLmy[Index]
+            Dbar[Index] = (FLmx[Index + 1] + FLmx[Index] + FLmy[Index + Nx] +
+                    FLmy[Index]);
             Dbar[Index] *= Dls;
             Dbar[Index] += 4. * Dsk;
             Dbar[Index] *= XRQuadrat;
@@ -711,8 +866,8 @@ Csim2d::solve2d(void)
     for (i = 0; i < numY; i++) {
         for (j = 0; j < numX; j++) {
             // first find gradients (right side first)
-            float dpxr = CellInfo[Index + 1].FracSol - CellInfo[Index].FracSol;
-            float dpyr = CellInfo[Index + Nx].FracSol + CellInfo[Index + Nx + 1].FracSol;
+            dpxr = CellInfo[Index + 1].FracSol - CellInfo[Index].FracSol;
+            dpyr = CellInfo[Index + Nx].FracSol + CellInfo[Index + Nx + 1].FracSol;
             dpyr -= CellInfo[Index - Nx].FracSol + CellInfo[Index - Nx + 1].FracSol;
             dpyr *= .25;
             float normr = sqrt(dpxr * dpxr + dpyr * dpyr);
@@ -724,11 +879,11 @@ Csim2d::solve2d(void)
             }
 
             // now gradients for left side
-            float dpxl = CellInfo[Index].FracSol - CellInfo[Index - 1].FracSol;
-            float dpyl = CellInfo[Index + Nx].FracSol + CellInfo[Index + Nx - 1].FracSol;
+            dpxl = CellInfo[Index].FracSol - CellInfo[Index - 1].FracSol;
+            dpyl = CellInfo[Index + Nx].FracSol + CellInfo[Index + Nx - 1].FracSol;
             dpyl -= CellInfo[Index - Nx].FracSol + CellInfo[Index - Nx - 1].FracSol;
             dpyl *= 0.25;
-            float norml = sqrt(dpxl * dpxl + dpyl * dpyl);
+            norml = sqrt(dpxl * dpxl + dpyl * dpyl);
             if (norml > normConst) {
                 dpxl /= norml;
             } 
@@ -737,11 +892,11 @@ Csim2d::solve2d(void)
             }
 
             // gradients for upper side
-            float dpxu = CellInfo[Index + Nx + 1].FracSol + CellInfo[Index + 1].FracSol;
+            dpxu = CellInfo[Index + Nx + 1].FracSol + CellInfo[Index + 1].FracSol;
             dpxu -= CellInfo[Index + Nx - 1].FracSol + CellInfo[Index - 1].FracSol;
             dpxu *= .25;
-            float dpyu = CellInfo[Index + Nx].FracSol - CellInfo[Index].FracSol;
-            float normu = sqrt(dpxu * dpxu + dpyu * dpyu);
+            dpyu = CellInfo[Index + Nx].FracSol - CellInfo[Index].FracSol;
+            normu = sqrt(dpxu * dpxu + dpyu * dpyu);
             if (normu > normConst) {
                 dpyu /= normu;
             }
@@ -750,11 +905,11 @@ Csim2d::solve2d(void)
             }
 
             // gradients for down side
-            float dpxd = CellInfo[Index - Nx + 1].FracSol + CellInfo[Index + 1].FracSol;
+            dpxd = CellInfo[Index - Nx + 1].FracSol + CellInfo[Index + 1].FracSol;
             dpxd -= CellInfo[Index - Nx - 1].FracSol + CellInfo[Index - 1].FracSol;
             dpxd *= 0.25;
-            float dpyd = CellInfo[Index].FracSol - CellInfo[Index - Nx].FracSol;
-            float normd = sqrt(dpxd * dpxd + dpyd * dpyd);
+            dpyd = CellInfo[Index].FracSol - CellInfo[Index - Nx].FracSol;
+            normd = sqrt(dpxd * dpxd + dpyd * dpyd);
             if (normd > normConst) {
                 dpyd /= normd;
             }
@@ -776,43 +931,88 @@ Csim2d::solve2d(void)
     }
     // 2. part solve concentration
     n = 0;
-    Index = (Nx + 1);
-    C_error = 0.;
-    for (i = 0; i < numY; i++) {
-        for (j = 0; j < numX; j++) {
-            ae[Index] = (Dls * (FLmx[Index+1]-FLmx[Index]+FLmy[Index+Nx]-FLmy[Index]));
-            ae[Index] *= XRQuadrat * TimeInfo->tWidth;
-            ae[Index] += Dsk * 0.5 * XR * TimeInfo->tWidth;
-            aw[Index] = -(Dls * (FLmx[Index+1]-FLmx[Index]+FLmy[Index+Nx]-FLmy[Index]));
-            aw[Index] *= XRQuadrat * TimeInfo->tWidth;
-            aw[Index] -= Dsk * 0.5 * XR * TimeInfo->tWidth;
-            an[Index] = -(Dls * (FLmx[Index+1]-FLmx[Index]+FLmy[Index+Nx]-FLmy[Index]));
-            an[Index] *= XRQuadrat * TimeInfo->tWidth;
-            an[Index] -= Dsk * 0.5 * XR * TimeInfo->tWidth;
-            as[Index] = (Dls * (FLmx[Index+1]-FLmx[Index]+FLmy[Index+Nx]-FLmy[Index]));
-            as[Index] *= XRQuadrat * TimeInfo->tWidth;
-            as[Index] += Dsk * 0.5 * XR * TimeInfo->tWidth;
-
-            b[Index] = CellInfo[Index].Conc;
-            ap[Index] = 1. - D_FS[Index];
-
-            // go to next cell in x-direc
-            Index++;
-        }
-        // go to next line in y-direction to the first cell
-        Index += 2;
-    }
-    ExtrudC();
+	do {
+		Index = (Nx + 1);
+		C_error = 0.;
+		for (i = 0; i < numY; i++) {
+			for (j = 0; j < numX; j++) {
+				CNew = u[Index + 1] * (Dls * FLmx[Index + 1] + Dsk);
+				CNew += u[Index - 1] * (Dls * FLmx[Index] + Dsk);
+				CNew += u[Index + Nx] * (Dls * FLmy[Index + Nx] + Dsk);
+				CNew += u[Index - Nx] * (Dls * FLmy[Index] + Dsk);
+				CNew *= XRQuadrat;
+			
+				CNew -= KKonv[Index];
+				CNew *= TimeInfo->tWidth;
+			
+				CNew += (oneminus[Index]+ 0.5 * D_FS[Index]) * CellInfo[Index].Conc;
+				CNew *= C_over[Index];
+			
+			
+				u[Index] = CNew;
+				
+				// go to next cell in x-direc
+				Index++;
+			}
+			// go to next line in y-direction to the first cell
+			Index += 2;
+		}
+		ExtrudC();
+		
+		// loop backwarts for error minimazing 
+		Index = (Nxy - 2 - Nx);
+		for (i = 0; i < numY; i++) {
+			for (j = 0; j < numX; j++) {
+				CNew = u[Index + 1] * (Dls * FLmx[Index + 1] + Dsk);
+				CNew += u[Index - 1] * (Dls * FLmx[Index] + Dsk);
+				CNew += u[Index + Nx] * (Dls * FLmy[Index + Nx] + Dsk);
+				CNew += u[Index - Nx] * (Dls * FLmy[Index] + Dsk);
+				CNew *= XRQuadrat;
+			
+				CNew -= KKonv[Index];
+				CNew *= TimeInfo->tWidth;
+			
+				CNew += (oneminus[Index]+ 0.5 * D_FS[Index]) * CellInfo[Index].Conc;
+				CNew *= C_over[Index];
+			
+			
+				// Estimation of maximum relativ error againg last iteration step
+				error = fabs(( CNew - u[Index] ) / CNew);
+				//fprintf(stdout, " Error : %f \n", error);
+				C_error = (C_error > error) ? C_error : error;
+				u[Index] = CNew;
+				
+				// go to cell left in x-direc
+				Index--;
+			}
+			
+			// go to steps to left end of deeper line 
+			Index -= 2;
+		}
+		ExtrudC();
+		n++;
+	} while (C_error > d_C && n < .5 * sqrt(Nxy));
+	//fprintf(stdout, "#C_E %f %d %f\n", C_error, n, d_C);
+	NC = n;
+	n = 0;
+	
+	
+	
     // solve equations using conjugate gradient methods (GMRES)
     //NC = CGM(ae, aw, an, as, ap, b, u, Nx, Ny, maxit, GMRES);
-	// this->OutCoeff();
+    // this->OutCoeff();
+#ifdef __NAG__
 	NAGSOL(ae, aw, an, as, ap, b, u, Nx, Ny, "RGMRES", "CompletePiv", "UnModFact", maxit);
+#endif
+    //slapsol(ae, aw, an, as, ap, b, Theta, Nx, Ny, maxit);
+
     //NC = CGM(ae, aw, an, as, ap, b, u, Nx, Ny, maxit, CGHS);
-//#endif     
+  
     // restoring of all calculated values as new values
     for (i = 0; i < DimInfo->Nxy; i++) {
         CellInfo[i].FracSol = FracSolNew[i];
         CellInfo[i].Theta = Theta[i];
+		//cout<<"Theta["<<i<<"]="<<CellInfo[i].Theta << endl;
         FL[i] = 1.-FracSolNew[i];
         CellInfo[i].Conc = u[i];
         //cout<<"c["<<i<<"]="<<CellInfo[i].Conc << endl;
