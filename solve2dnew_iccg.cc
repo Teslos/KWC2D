@@ -453,7 +453,8 @@ Csim2d::resetv(void)
     // set all vectors to zero
     for (int i = 0; i < DimInfo->Nxy; i++) {
         ae[i] = aw[i] = an[i] = as[i] = ap[i] = 0.;
-        ane[i] = anw[i] = ase[i] = asw[i] = b[i] = u[i] = Theta[i] = 0.;
+        ane[i] = anw[i] = ase[i] = asw[i] = b[i] = u[i] = 0;
+		Theta[i] = -PI + 0.0001; // arbitary value for liquid phase
     }
 }
 
@@ -493,22 +494,30 @@ Csim2d::Agamma(double zeta)
 
 // subtitute now returns correction term
 // this is described in eq (A.29) Acta Materialia 51 (2003) 6035–6058.
-inline double 
+// inline double 
+// Csim2d::Subt(double Theta)
+//{
+//    if (-PI <= Theta && Theta < PI)
+//        return 0.0;
+//    else if (Theta < -PI)
+//        return PI2;
+//    else if (Theta >= PI)
+//        return -PI2;
+//    return -PI+1e-4; // this is liquid; this probably never executed
+//}
+// definition of modular variable in Fipy
+inline double
 Csim2d::Subt(double Theta)
 {
-    if (-PI <= Theta && Theta < PI)
-        return 0.0;
-    else if (Theta < -PI)
-        return PI2;
-    else if (Theta > PI)
-        return -PI2;
-    return Theta; // this is liquid 
+	return fmod( Theta + 3. * PI, 2. * PI ) - PI;
 }
 
 inline double 
 Csim2d::P(double w)
 {
-    double t = exp(-beta * w);
+	// upper limit on exponent.
+	double expo = (beta * w) < 100. ? (beta * w) :  100.;
+    double t = exp(-expo);
 	//cout << " P value is : " << 1.<< endl;
     return 1. - t + (mu / epsilonL) * t;
 	//return 1.;
@@ -652,9 +661,9 @@ Csim2d::solve2d(void)
     // calculate gradient of theta at middle of cell edge Tmx:
     // absolute value of Tmx is calculated.
     for (i = 1; i < Nxy; i++) {
-        Tmx[i] = CellInfo[i].Theta-CellInfo[i-1].Theta;
-        Cmx[i] = Subt(Tmx[i]);
-        Tmx[i] += Cmx[i];
+        Tmx[i] = Subt(CellInfo[i].Theta-CellInfo[i-1].Theta);
+        //Cmx[i] = Subt(Tmx[i]);
+        //Tmx[i] += Cmx[i];
 		Tmx[i] *= XR;
         Tmx[i] = fabs(Tmx[i]);
 		//cout << "Tmx[" << i << "]=" << Tmx[i] << " Theta[" << i << "]=" << CellInfo[i].Theta 
@@ -664,9 +673,9 @@ Csim2d::solve2d(void)
     // calculate gradient of theta at middle of cell edge Tmy: 
     // absolute value of Tmy is calculated.
     for (i = Nx+1; i < Nxy; i++) {
-        Tmy[i] = CellInfo[i].Theta-CellInfo[i-Nx].Theta;
-        Cmy[i] = Subt(Tmy[i]);
-        Tmy[i] += Cmy[i];
+        Tmy[i] = Subt(CellInfo[i].Theta-CellInfo[i-Nx].Theta);
+        //Cmy[i] = Subt(Tmy[i]);
+        //Tmy[i] += Cmy[i];
 		Tmy[i] *= XR;
         Tmy[i] = fabs(Tmy[i]);
 		//cout << "Tmy[" << i <<"]=" << Tmy[i]<< " Theta[" << i << "]=" << CellInfo[i].Theta << endl;
@@ -758,7 +767,7 @@ Csim2d::solve2d(void)
 					anis = 0;
 					co   = 0;
 				}
-			
+				// use simple phase field without theta-phase contributions 
 				if ( type == 1 ) {
 					FSNew += anis;
 					FSNew += poly * (FSold - 0.5) * deltaQR;
@@ -775,7 +784,7 @@ Csim2d::solve2d(void)
 				} 
 				else {
 					// theta contributions 
-					anis = 0.;  // for now anisotropy is zero
+					// anis = 0.;  // for now anisotropy is zero, need to be tested!!
 					FSNew += anis;
 					// multiply laplace operator: alpha^2 * nabla^2 Phi
 					FSNew *= mobil * Gamma * tauPhi; // this is equal to alpha^2 in KWC model
@@ -884,8 +893,8 @@ Csim2d::solve2d(void)
 	Index = (Nx+1);
     for (i = 0; i < numY; i++) {
         for (j = 0; j < numX; j++) {
-			// add small constant to fract.solid 
-			FracSolNew[Index] += FSMALL;
+			// add small constant to fract.solid if frac.solid is very small
+			FracSolNew[Index] += (FracSolNew[Index] < FSMALL ? FSMALL : 0.);
             Dmbar[Index] = (Dmx[Index]+Dmx[Index+1]+Dmy[Index]+Dmy[Index+Nx]);
 			Dmbar[Index] *= XRQuadrat;
 			// gradient at center 
@@ -894,7 +903,6 @@ Csim2d::solve2d(void)
 			
 			Dmbar[Index] += P(epsilonL*sqrt(gTmx*gTmx + gTmy*gTmy)) *
 					FracSolNew[Index]*FracSolNew[Index]*TR*tauTheta;
-			//cout << "I have tshirt"<<endl;
 			Pbar[Index] = P(epsilonL*sqrt(gTmx*gTmx + gTmy*gTmy)) 
 						* FracSolNew[Index]*FracSolNew[Index];
 			//testing
@@ -931,8 +939,8 @@ Csim2d::solve2d(void)
 				
 			b[Index] = tauTheta * TR * Pbar[Index] * CellInfo[Index].Theta;
 			// added 19.02.14 additional corrections terms
-			b[Index] += (Cmx[Index + 1]*Dmx[Index + 1] - Cmx[Index]*Dmx[Index] 
-				- Cmy[Index] * Dmx[Index] + Cmy[Index + Nx] * Dmy[Index + Nx])*XRQuadrat;
+			//b[Index] += (Cmx[Index + 1]*Dmx[Index + 1] - Cmx[Index]*Dmx[Index] 
+			//	- Cmy[Index] * Dmx[Index] + Cmy[Index + Nx] * Dmy[Index + Nx])*XRQuadrat;
 				
 			Index++;
 		}

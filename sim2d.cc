@@ -138,11 +138,14 @@ Csim2d::InitRegion(istream &input)
     cout << "# How big is cell ? [cm] (float)" << endl;
     cout << "# for x ? " << endl;
     input >> LengthX;
+	cout << "#" << LengthX << endl;
     cout << "# for y ? " << endl;
     input >> LengthY;
+	cout << "#" << LengthY << endl;
     cout << "# for z ? " << endl;
     input >> LengthZ;
-
+	cout << "#" << LengthZ << endl;
+    
     cout << "# Number of cells...(int)" << endl;
     cout << "# in x direction ?" << endl;
     input >> numX;
