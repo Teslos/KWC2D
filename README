@@ -7,4 +7,6 @@ the rippening and segregation under flow regime.
 04.07.2011
 Implemented new solver SLAP 2.0. The solver is tested with TestSLAP.nb
 program. It was tested with given matrix coefficients with the fixed size.
-Matrix coefficients are probably not correct, it needs testing. 
+Matrix coefficients are probably not correct, it needs testing.
+
+New solver ICCG implemented and tested. It works correctly.  
