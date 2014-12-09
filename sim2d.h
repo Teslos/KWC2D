@@ -41,6 +41,7 @@ class Csim2d {
     float D_error;   // found error for divergence in V-solver.
     float d_C;       // allowed error for conc.solver.
 	float d_T;       // allowed error for theta solver.
+    float d_F;       // allowed error for phase-field solver.
     double FS;       // sum of p-field for control.
     float AG;        //
     float Curv;      // control value for middle curvature p-field.
@@ -131,6 +132,7 @@ public:
     inline double Agamma(double);
     inline double P(double);
     inline double Subt(double);
+	inline double Corr(double);
     // sets boundary conditions;
     // from extruder.cc
     void Extruder(void);

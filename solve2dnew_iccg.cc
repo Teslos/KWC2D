@@ -494,17 +494,18 @@ Csim2d::Agamma(double zeta)
 
 // subtitute now returns correction term
 // this is described in eq (A.29) Acta Materialia 51 (2003) 6035–6058.
-// inline double 
-// Csim2d::Subt(double Theta)
-//{
-//    if (-PI <= Theta && Theta < PI)
-//        return 0.0;
-//    else if (Theta < -PI)
-//        return PI2;
-//    else if (Theta >= PI)
-//        return -PI2;
-//    return -PI+1e-4; // this is liquid; this probably never executed
-//}
+inline double 
+Csim2d::Corr(double Theta)
+{
+    if (-PI <= Theta && Theta < PI)
+        return 0.0;
+    else if (Theta < -PI)
+        return PI2;
+    else if (Theta >= PI)
+        return -PI2;
+    return -PI+1e-4; // this is liquid; this probably never executed
+}
+
 // definition of modular variable in Fipy
 inline double
 Csim2d::Subt(double Theta)
@@ -530,7 +531,7 @@ Csim2d::solve2d(void)
     double const normConst = 1.e-8;
     int const maxit = 1000;
     int i,j;
-	int type = 2;      // calculate full KWC model
+	int type = 1;      // calculate simple phase model-1 or full KWC model-2
     float x_maxPos = 0, y_maxPos = 0; 
     // coefficients of the "stiffness" matrix
     double atc = 0., center = 0.,
@@ -662,7 +663,7 @@ Csim2d::solve2d(void)
     // absolute value of Tmx is calculated.
     for (i = 1; i < Nxy; i++) {
         Tmx[i] = Subt(CellInfo[i].Theta-CellInfo[i-1].Theta);
-        //Cmx[i] = Subt(Tmx[i]);
+		Cmy[i] = Corr(CellInfo[i].Theta-CellInfo[i-1].Theta);
         //Tmx[i] += Cmx[i];
 		Tmx[i] *= XR;
         Tmx[i] = fabs(Tmx[i]);
@@ -674,7 +675,8 @@ Csim2d::solve2d(void)
     // absolute value of Tmy is calculated.
     for (i = Nx+1; i < Nxy; i++) {
         Tmy[i] = Subt(CellInfo[i].Theta-CellInfo[i-Nx].Theta);
-        //Cmy[i] = Subt(Tmy[i]);
+		Cmy[i] = Corr(CellInfo[i].Theta-CellInfo[i-Nx].Theta);
+		//Cmy[i] = Subt(Tmy[i]);
         //Tmy[i] += Cmy[i];
 		Tmy[i] *= XR;
         Tmy[i] = fabs(Tmy[i]);
@@ -778,9 +780,11 @@ Csim2d::solve2d(void)
 						*(epssigma * co + 1.);
 					dt_mobil = TimeInfo->tWidth / dt_mobil;
 					FSNew *= dt_mobil;
-					FSNew += FSold;  
+					FSNew += FSold;
+					// calculate error for simple phase field equation 
+					error = fabs(( FSNew - FracSolNew[Index])/(FSNew+1E-20));
+					F_error = (F_error > error) ? F_error : error; 
 					FracSolNew[Index] = FSNew;
-					
 				} 
 				else {
 					// theta contributions 
@@ -807,7 +811,7 @@ Csim2d::solve2d(void)
 					FSNew /= theta_over[Index];
 				
 				
-					// Estimation of maximum relativ error againg last iteration step
+					// Estimation of maximum relativ error against last iteration step
 					error = fabs(( FSNew - FracSolNew[Index] ) / (FSNew+1E-20));
 					//fprintf(stdout, " Error : %f F[%i]=%lf\n", error, Index, FSNew);
 					F_error = (F_error > error) ? F_error : error;
@@ -821,7 +825,7 @@ Csim2d::solve2d(void)
 		// Set boundary 24.06.14, maybe not necessary it is called in main routine
 		// Extruder();
 		n++;
-	} while (F_error > d_C && n < .5 * sqrt(Nxy) && type == 2);
+	} while (F_error > d_F && n < .5 * sqrt(Nxy));
 	NF = n;
 	n = 0;
 	//exit(-1);
@@ -862,11 +866,13 @@ Csim2d::solve2d(void)
     FS = S_d_FS;
 
     // calculate fraction solid at middle of the cell edge(x-dir).
+	// this corresponds for arithmetic face-value in Fipy.
     for (i = 1; i < Nxy; i++) {
         FSmx[i] = .5 * (FracSolNew[i] + FracSolNew[i-1]);
     }
 
     // calculate fraction solid at middle of the cell edge(y-dir). 
+	// this corresponds for arithmetic face-value in Fipy.
     for (i = Nx+1; i < Nxy; i++) {
         FSmy[i] = .5 * (FracSolNew[i] + FracSolNew[i - Nx]);
     }

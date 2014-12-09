@@ -292,7 +292,7 @@ int Csim2d::OutContr(int tstep)
         << " " << Otip << " ";
     // print all the rest
     cout << FS << " " << AG << " " << C_control 
-        << " " << C_liquid;
+        << " " << C_liquid << " ";
     cout << T_D << " " << CellInfo[DimInfo->Nx + 1 + Xmax_Pos].CG;
     cout << " " << Ymax_Pos << " " << 10000. * v_supery1 << endl;
 

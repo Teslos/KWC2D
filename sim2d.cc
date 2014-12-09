@@ -310,6 +310,9 @@ Csim2d::InitRegion(istream &input)
     cout << "# Accepted relative error in C-estimation (float) " << endl;
     input >> d_C;
     cout << "#" << d_C << endl;
+    cout << "# Accepted relative error in F-estimation (float) " << endl;
+	input >> d_F;
+	cout << "#" << d_F << endl;
     cout << "# Accepted relative error in V-estimation (float) " << endl;
     input >> Div;
     cout << "#" << Div << endl;
