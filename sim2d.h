@@ -1,97 +1,103 @@
+// vim: noai:ts=4:sw=4
 #ifndef __SIM2D__
 #define __SIM2D__
 #include<iostream>
 using namespace std;
-
+/**
+ * This class contains all simulation parameters
+ * information about dimension of the problem
+ * number of cells in x,y,z direction.
+ */
 class Csim2d {
-    float LengthX;    // dimension of one cell in microns
+	int   type;       //!< type of the problem KWC (2) or Simple (1)
+    float LengthX;    //!< dimension of one cell in microns
     float LengthY;    
     float LengthZ;
 
-    int   numX;    // number of cells in x,y,z direction 
+    int   numX;    //!< number of cells in x,y,z direction 
     int   numY;
     int   numZ;
 
-    int   maxPos;  // maximal pos in y for solid for moving frame
-    int   Xmax_Pos;  // maximal x solid position
-    int   Ymax_Pos;  // maximal y solid position
+    int   maxPos;  //!< maximal pos in y for solid for moving frame
+    int   Xmax_Pos;  //!< maximal x solid position
+    int   Ymax_Pos;  //!< maximal y solid position
 
-    int   n_move;  // number of cell which droped out of frame.
-    int   NC;      // iteration number for implicit concentration solver.
-    int   NP;      // iteration number for implicit pressure solver.
-    int   NV;      // iteration number for implicit velocity solver.
-    int   ND;      // iteration number for divergence in velocity solver.
-    int   NTheta;  // iteration number for implicit theta field solver.
-	int   NF;      // iteration number for semi-implicit phase field solver.
+    int   n_move;  //!< number of cell which droped out of frame.
+    int   NC;      //!< iteration number for implicit concentration solver.
+    int   NP;      //!< iteration number for implicit pressure solver.
+    int   NV;      //!< iteration number for implicit velocity solver.
+    int   ND;      //!< iteration number for divergence in velocity solver.
+    int   NTheta;  //!< iteration number for implicit theta field solver.
+	int   NF;      //!< iteration number for semi-implicit phase field solver.
 
-    float NR0;     // relative number of particles.
-    float NR;      // relative number of particles on start.
+    float NR0;     //!< relative number of particles.
+    float NR;      //!< relative number of particles on start.
     float N0;
-    float ML;      // slope of liquidus line.
-    float DC[2];   // Diffusionconstant. concentration (Particles/M)
-    float k;       // segregation coefficient.
-    float C_0;     // global starting concentration.
-    float C_control; // sum of C (controlling conservation of conc.)
-    float C_liquid;  // sum of cl*fl/sum(fl).
-    float C_error;   // found error for implicit concentration solver.
-	float F_error;   // found error for semi-implicit phase solver.
-	float T_error;   // found error for implicit theta solver.
-    float P_error;   // found error for implicit pressure solver.
-    float V_error;   // found error for implicit velocity solver.
-    float D_error;   // found error for divergence in V-solver.
-    float d_C;       // allowed error for conc.solver.
-	float d_T;       // allowed error for theta solver.
-    float d_F;       // allowed error for phase-field solver.
-    double FS;       // sum of p-field for control.
+    float ML;      //!< slope of liquidus line.
+    float DC[2];   //!< Diffusionconstant. concentration (Particles/M)
+    float k;       //!< segregation coefficient.
+    float C_0;     //!< global starting concentration.
+    float C_control; //!< sum of C (controlling conservation of conc.)
+    float C_liquid;  //!< sum of cl*fl/sum(fl).
+    float C_error;   //!< found error for implicit concentration solver.
+	float F_error;   //!< found error for semi-implicit phase solver.
+	float T_error;   //!< found error for implicit theta solver.
+    float P_error;   //!< found error for implicit pressure solver.
+    float V_error;   //!< found error for implicit velocity solver.
+    float D_error;   //!< found error for divergence in V-solver.
+    float d_C;       //!< allowed error for conc.solver.
+	float d_T;       //!< allowed error for theta solver.
+    float d_F;       //!< allowed error for phase-field solver.
+    double FS;       //!< sum of p-field for control.
     float AG;        //
-    float Curv;      // control value for middle curvature p-field.
-    float Curv1;     // control value for middle curvature n-vector.
-    float crit;      // criteria for FL->0
-    float lambda[2]; // conduction in W/cm/K
-    float RhoCp[2];  // specific heat in J/ccm/K
-    float D[2];      // temperature diffusion coeff. for matrix/ball
-    float DR[2];     // reciprocal value.
-    float L;         // lattent heat J/ccm
-    float Tmelt;     // melting temperature
-    float TPoint;    // deltaT what is given away per time-step.
-    float T_0;       // starting temperature on the down border.
-    float T_D;       // temperature at down border.
-    float TGrad;     // temperature gradient over the cell.
-    float Utip;      // tip-unterkuehlung = (T*-Tm(c_0))/(1-k)mc_0
-    float Otip;      // tip-overconcentration 
+    float Curv;      //!< control value for middle curvature p-field.
+    float Curv1;     //!< control value for middle curvature n-vector.
+    float crit;      //!< criteria for FL->0
+    float lambda[2]; //!< conduction in W/cm/K
+    float RhoCp[2];  //!< specific heat in J/ccm/K
+    float D[2];      //!< temperature diffusion coeff. for matrix/ball
+    float DR[2];     //!< reciprocal value.
+    float L;         //!< lattent heat J/ccm
+    float Tmelt;     //!< melting temperature
+    float TPoint;    //!< deltaT what is given away per time-step.
+    float T_0;       //!< starting temperature on the down border.
+    float T_D;       //!< temperature at down border.
+    float TGrad;     //!< temperature gradient over the cell.
+    float Utip;      //!< tip-unterkuehlung = (T*-Tm(c_0))/(1-k)mc_0
+    float Otip;      //!< tip-overconcentration 
 
     float y_bef;
     float SI1;
     float Delta;
-    float ATC;       // prefactor for ATC 
-    float mobil;     // mobility of phase-field interface
-    float Gamma;     // Gibbs-Thomson coeff.
+    float ATC;       //!< prefactor for ATC 
+    float mobil;     //!< mobility of phase-field interface
+    float Gamma;     //!< Gibbs-Thomson coeff.
     float epskin;    
-    float epssigma;  // Amplitudes of growing interface
-    float Rho;       // density of liquid
-    float d_Rho;     // density difference liquid-solid
-    float my;        // viscosity
-    float P_0;       // initial pressure for NS
-    float P_G;       // pressure gradient.
+    float epssigma;  //!< Amplitudes of growing interface
+    float Rho;       //!< density of liquid
+    float d_Rho;     //!< density difference liquid-solid
+    float my;        //!< viscosity
+    float P_0;       //!< initial pressure for NS
+    float P_G;       //!< pressure gradient.
     float V_0;       // 
-    float V_control; // control velocity
-    float KK;        // Kozeny-Karman factor
-    float Div;       // allowed value for divergence.
-    float DivMax;    // maximal divergence
-    int Radius[200]; // radius of particles.
-    int x0[200];     // center of particles.
+    float V_control; //!< control velocity
+    float KK;        //!< Kozeny-Karman factor
+    float Div;       //!< allowed value for divergence.
+    float DivMax;    //!< maximal divergence
+    int Radius[200]; //!< radius of particles.
+    int x0[200];     //!< center of particles.
     int y0[200];      
-    float theta0[200]; // initial orientation of grain. -pi <= theta0 < pi
+    float theta0[200]; //!<    initial orientation of grain. -pi <= theta0 < pi
 
-    float alfa;      // gradient coefficient for phi field
-    float s;         // gradient coefficient for theta field
-    float epsilonL;  // characteristic length of grain boundary
-    float tauPhi;    // time-relaxation parameter for phi field
-    float tauTheta;  // time-relaxation parameter for theta field
-    float sigma;     // undercooling parameter in m(phi) function
-    float beta;      // scaling coefficient in P function.
-    float mu;        // scaling mobility in P function.
-    float gamma;     // gamma big number (infinite diffusitivity)
+    float alfa;      //!<  gradient coefficient for phi field
+    float s;         //!<  gradient coefficient for theta field
+    float epsilonL;  //!<  characteristic length of grain boundary
+    float tauPhi;    //!<  time-relaxation parameter for phi field
+    float tauTheta;  //!<  time-relaxation parameter for theta field
+    float sigma;     //!<  undercooling parameter in m(phi) function
+    float beta;      //!<  scaling coefficient in P function.
+    float mu;        //!<  scaling mobility in P function.
+    float gamma;     //!<  gamma big number (infinite diffusitivity)
 
     double *ap; 
     double *ae; 
@@ -234,13 +240,13 @@ struct Cell {
 };
 
 struct Dimension{
-    int Nx;
-    int Ny;
-    int Nz;
-    int Nxy;
-    int Nyz;
-    int Nxz;
-    int Nxyz;
+    int Nx;  //!< Dimension of calculation domain in x-direction
+    int Ny;  //!< Dimension of calculation domain in y-direction
+    int Nz;  //!< Dimension of calculation domain in z-direction
+    int Nxy; //!< Number of cells in plane xy
+    int Nyz; //!< Number of cells in plane yz
+    int Nxz;  //!< Number of cells in plane xz
+    int Nxyz;  //!< Number of cells in complete 3d domain xyz
 };
 
 extern "C" void slapsol_(double *ae, double *aw, double *an, double *as, double *ap,

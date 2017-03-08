@@ -1,9 +1,10 @@
+// vim: noai:ts=4:sw=4
 #include "sim2d.h"
 #include <iostream>
 #include <math.h>
 #include <fstream>
 using namespace std;
-#define M_PI 3.14
+//#define M_PI 3.14
 
 Csim2d::Csim2d()
 {
@@ -134,7 +135,9 @@ Csim2d::InitRegion(istream &input)
     cout << "# Region informations" << endl;
     cout << "#" << endl;
     cout << "#####################" << endl;
-    
+   	cout << "# TYPE of the problem KWC (2) or Simple (1) ?" << endl;
+    input >> type;	
+	cout << "# Problem ? " << ((type == 2) ? "KWC" : "Simple") << endl;
     cout << "# How big is cell ? [cm] (float)" << endl;
     cout << "# for x ? " << endl;
     input >> LengthX;
@@ -243,10 +246,10 @@ Csim2d::InitRegion(istream &input)
     cout << "# Characteristic length for grain boundary Epsilon(float)" << endl;
     input >> epsilonL;
     cout << "#" << epsilonL << endl;
-    cout << "# Phase transient coefficient (float)" << endl;
+    cout << "# Phase transient coefficient tauPhi (float)" << endl;
     input >> tauPhi;
     cout << "#" << tauPhi << endl;
-    cout << "# Orientation transient coefficient (float)" << endl;
+    cout << "# Orientation transient coefficient tauTheta (float)" << endl;
     input >> tauTheta;
     cout << "#" << tauTheta << endl;
     cout << "# Undercooling parameter in M(phi) function (float)" << endl;
@@ -335,6 +338,7 @@ Csim2d::InitRegion(istream &input)
     DR[0] = 1. / D[0];
     DR[1] = 1. / D[1];
 
+	// gradient over the cell
     TGrad *= LengthX;
     T_D = T_0;
 
@@ -625,7 +629,7 @@ Csim2d::InitTemperature(void)
         Tmy[j]        = 0.;
         Cmx[j]        = 0.;
         Cmy[j]        = 0.;
-        Theta[j]      = M_PI;
+        Theta[j]      = 0.;
         theta_over[j] = 0.;
         Dmx[j]        = 0.;
         Dmy[j]        = 0.;
@@ -655,7 +659,17 @@ Csim2d::InitTemperature(void)
 bool
 Csim2d::StabilCond()
 {
-    float XQuadrat = LengthX * LengthX;
-    //return TimeInfo->tWidth < tauTheta / (alfa * alfa) * XQuadrat * 0.25; 
-	return true;
+	if (type == 1) return true;
+	
+    double XQuadrat = LengthX * LengthX;
+	double alfaQuadrat = mobil * Gamma * tauPhi;
+    if (TimeInfo->tWidth < tauTheta / alfaQuadrat * XQuadrat * 0.25 ) {
+	    cout << "#Stability condition Time step: " << TimeInfo->tWidth << " < " 
+		    << tauTheta / alfaQuadrat * XQuadrat * 0.25 << endl;
+    	return true;
+    } else {
+    	cout << "#Stability condition Time step: " << TimeInfo->tWidth << " > " 
+		   << tauTheta / alfaQuadrat * XQuadrat * 0.25 << endl;
+		return false;
+    }
 }

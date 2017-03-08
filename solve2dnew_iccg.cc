@@ -1,3 +1,4 @@
+// vim: noai:ts=4:sw=4
 /*
 *	After trying to solve concentration equation using different solvers, 
 *   decision is made to return to iterative Gauss-Seidel method which 
@@ -17,6 +18,7 @@
 #include "bicgstab.h"
 #include "gmres.h"
 #include "cblas.h"
+#include "iccg.h"
 
 #define CGHS     1
 #define BICGSQ   2
@@ -44,13 +46,13 @@ void
 mult(const FiveDiagMatrix &A, const double *v, double *w)
 {
     int i,j, Index;
-    int Nx = (csim2d->getDimension())->Nx;
-    int Ny = (csim2d->getDimension())->Ny;
-    Index = Nx + 1;
-    for (i = 0; i < Nx * Ny; i++) w[i] = 0.; // restart to zero
-    for (i = 0; i < Ny-2; i++) {
-        for (j = 0; j < Nx-2; j++) {
-           w[Index] = A.ap[Index]*v[Index]+A.ae[Index-1]*v[Index-1]+
+    int Nx           = (csim2d->getDimension())->Nx;
+    int Ny           = (csim2d->getDimension())->Ny;
+    Index            = Nx + 1;
+    for (i           = 0; i < Nx * Ny; i++) w[i] = 0.; // restart to zero
+    for (i           = 0; i < Ny-2; i++) {
+        for (j       = 0; j < Nx-2; j++) {
+           w[Index]  = A.ap[Index]*v[Index]+A.ae[Index-1]*v[Index-1]+
                A.aw[Index+1]*v[Index+1]+A.an[Index+Nx]*v[Index+Nx]
                +A.as[Index-Nx]*v[Index-Nx];
            // go to next cell in x-direction
@@ -58,7 +60,7 @@ mult(const FiveDiagMatrix &A, const double *v, double *w)
         }
         // finished in x-direction go 
         // further in y-direction one above
-        Index += 2;
+        Index       += 2;
     }
 }
 
@@ -168,156 +170,6 @@ void CGM(double *ae, double *aw, double *an, double *as, double *ane, double *an
         " difference is " << EPS << endl;
     //for (int i=0; i < M; i++) x[i] = u[i];
     
-}
-
-//This routine incorporates the Incomplete Cholesky preconditioned
-//Conjugate Gradient Solver for symmetric matrices in 2d problems
-//with 5 diagonal matrix structure.
-
-// translation of fortran code by Ismet Demirdzic, Sarajevo, 1991.	
-
-void iccg(double *ae, double *aw, double *an, double *as, double *ap, double *q, double *fi, int Nx, int Ny, int NS, int ltest, double resmax, int *numiter, float *resf)
-{
-	int i,j,Index, l;  
-	
-	int numX = Nx - 2;
-	int numY = Ny - 2;
-	int Nxy  = Nx * Ny;
-	// allocate the working arrays
-	double *pk  = (double *) malloc( Nxy * sizeof(double) ); 
-	double *zk  = (double *) malloc( Nxy * sizeof(double) );
-	double *d   = (double *) malloc( Nxy * sizeof(double) );
-	double *res = (double *) malloc( Nxy * sizeof(double) );
-	
-	// initialize working arrays
-	for (i = 0; i < Nxy; i++) {
-		pk[i] = 0.0;
-		zk[i] = 0.0;
-		d[i]  = 0.0;
-		res[i] = 0.0;
-	}
-	
-	// calculate initial residual vector and the norm
-	Index = Nx + 1;
-	double res0 = 0;
-	for (j = 0; j < numY; j++) {
-		for (i = 0; i < numX; i++) {
-			res[Index] = q[Index] - ap[Index]*fi[Index] - ae[Index]*fi[Index+1] - aw[Index]*fi[Index-1] -
-				an[Index]*fi[Index+Nx] - as[Index]*fi[Index-Nx];
-			res0 += fabs(res[Index]); 
-			Index++;
-		}
-		Index += 2;
-	}
-	
-	// if ltest = 1, print norm
-	if (ltest) printf("SWEEP, RES0 = %lf\n", res0);
-	
-	Index = Nx + 1;
-	//calculate elements of diagonal preconditioning matrix
-	for (j = 0; j < numY; j++) {
-		for (i = 0; i < numX; i++) {
-			d[Index] = 1./(ap[Index] - aw[Index]*aw[Index]*d[Index-1] - as[Index]*as[Index]*d[Index-Nx]);
-			Index++;
-		}
-		Index += 2;
-	}
-	
-	double s0 = 1E+20;
-	
-	//start inner iterations
-	for (l = 0; l < NS; l++) {
-	
-	
-		//solve for zk[Index] -- forward substitution
-		Index = Nx + 1;
-		for (j = 0; j < numY; j++) {
-			for (i = 0; i < numX; i++) {
-				zk[Index] = (res[Index] - aw[Index]*zk[Index-1] - as[Index]*zk[Index-Nx])*d[Index];
-				Index++;
-			}
-			Index += 2;
-		}
-		
-		Index = Nx + 1;
-		for (j = 0; j < numY; j++) {
-			for (i = 0; i < numX; i++) {
-				zk[Index] /= (d[Index]+1E-30);
-				Index++;
-			}
-			Index += 2;
-		}
-	
-		//backward substitution calculate scalar product sk
-		double sk = 0.0;
-		Index = Nxy - 2 - Nx;
-		for (j = 0; j < numY; j++) {
-			for (i = 0; i < numX; i++) {
-				zk[Index] = (zk[Index] - ae[Index]*zk[Index+1] - an[Index]*zk[Index+Nx])*d[Index];
-				sk += res[Index]*zk[Index];
-				Index--;
-			}
-			Index -= 2;
-		}
-		
-		//calculate beta
-		double bet = sk / s0;
-		
-		//calculate new search vector pk
-		Index = Nx + 1;
-		for (j = 0; j < numY; j++) {
-			for (i = 0; i < numX; i++) {
-				pk[Index] = zk[Index] + bet * pk[Index];
-				Index++;
-			}
-			Index += 2;
-		}
-		
-		//calculate scalar product (pk.A pk ) and alpha (overwrite zk)
-		Index = Nx + 1;
-		double pkApk = 0.0;
-		for (j = 0; j < numY; j++) {
-			for (i = 0; i < numX; i++) {
-				zk[Index] = ap[Index]*pk[Index] + ae[Index]*pk[Index+1] + aw[Index]*pk[Index-1] +
-					an[Index]*pk[Index+Nx] + as[Index]*pk[Index-Nx];
-				pkApk += pk[Index] * zk[Index];
-				Index++;
-			}
-			Index += 2;
-		}
-		
-		double alf = sk / pkApk;
-		
-		//calculate variable correction, new residual vector, and norm
-		double resl = 0.;
-		Index = Nx + 1;
-		for(j = 0; j < numY; j++) {
-			for(i = 0; i < numX; i++) {
-				fi[Index]  += alf*pk[Index];
-				res[Index] -= alf*zk[Index];
-				resl += fabs(res[Index]);
-				Index++;  
-			}
-			Index += 2;
-		}
-		
-		s0 = sk;
-		
-		//check convergence
-		double rsm = resl / (res0+1E-30);
-		if (ltest) printf(" SWEEP, RESL = %lf, RSM = %lf\n", resl, rsm);
-		if (resl < resmax) {
-			*numiter = l;
-			*resf = resl;
-			free(pk);
-			free(zk);
-			free(d);
-			free(res);
-			return;
-		} 
-		
-	}
-	
 }
 
 void slapsol(double *ae, double *aw, double *an, double *as, double *ap, double *b, double *u, int ni, int nj, int maxit)
@@ -454,7 +306,8 @@ Csim2d::resetv(void)
     for (int i = 0; i < DimInfo->Nxy; i++) {
         ae[i] = aw[i] = an[i] = as[i] = ap[i] = 0.;
         ane[i] = anw[i] = ase[i] = asw[i] = b[i] = u[i] = 0;
-		Theta[i] = -PI + 0.0001; // arbitary value for liquid phase
+		// THIS IS WRONG!!!
+		//Theta[i] = -PI + 0.0001; // arbitary value for liquid phase
     }
 }
 
@@ -531,7 +384,6 @@ Csim2d::solve2d(void)
     double const normConst = 1.e-8;
     int const maxit = 1000;
     int i,j;
-	int type = 1;      // calculate simple phase model-1 or full KWC model-2
     float x_maxPos = 0, y_maxPos = 0; 
     // coefficients of the "stiffness" matrix
     double atc = 0., center = 0.,
@@ -553,12 +405,15 @@ Csim2d::solve2d(void)
     double norm2R = 0.;
 	double error = 0.;
 	
+	// Type II model constants 06.04.16
+	double kappa1 = 0.9;
+	double kappa2 = .02;
     // calculate values
     double deltaR = 1. / Delta;
     double deltaQR = 72. /(Delta * Delta);
     double dt_mobil = TimeInfo->tWidth * mobil;
     double a12 = 0.6267 * 5. / 24. ;
-    a12 *= Delta * ML * (1. - k) / DC[1];
+    a12 *= Delta * fabs(ML * (1. - k)) / DC[1];
     double VMax = V_control;
 
     // calculate reciprocal quadrats
@@ -663,7 +518,8 @@ Csim2d::solve2d(void)
     // absolute value of Tmx is calculated.
     for (i = 1; i < Nxy; i++) {
         Tmx[i] = Subt(CellInfo[i].Theta-CellInfo[i-1].Theta);
-		Cmy[i] = Corr(CellInfo[i].Theta-CellInfo[i-1].Theta);
+		// correction 26.03.16 Cmy -> Cmx 
+		//Cmx[i] = Corr(CellInfo[i].Theta-CellInfo[i-1].Theta);
         //Tmx[i] += Cmx[i];
 		Tmx[i] *= XR;
         Tmx[i] = fabs(Tmx[i]);
@@ -675,7 +531,7 @@ Csim2d::solve2d(void)
     // absolute value of Tmy is calculated.
     for (i = Nx+1; i < Nxy; i++) {
         Tmy[i] = Subt(CellInfo[i].Theta-CellInfo[i-Nx].Theta);
-		Cmy[i] = Corr(CellInfo[i].Theta-CellInfo[i-Nx].Theta);
+		//Cmy[i] = Corr(CellInfo[i].Theta-CellInfo[i-Nx].Theta);
 		//Cmy[i] = Subt(Tmy[i]);
         //Tmy[i] += Cmy[i];
 		Tmy[i] *= XR;
@@ -719,7 +575,12 @@ Csim2d::solve2d(void)
 				poly = FSold * ( 1. - FSold );
 				// redefine sigma using old parameters
 				sigma = tauPhi * 30 * U * deltaR;
-				float Mpoly = FSold - 0.5 + sigma * poly;
+				// sigma for Type II model
+				// sigma = kappa1 / M_PI * atan(kappa2 * U);
+				// This defines Type I model from KWC paper
+				double Mpoly = FSold - 0.5 + sigma * poly;
+				// This defines Type II model from KWC paper
+			    // double Mpoly = FSold - 0.5 + sigma;
 				FSNew = CellInfo[Index+1].FracSol - FSold;
 				FSNew += CellInfo[Index-1].FracSol - FSold;
 				FSNew += CellInfo[Index+Nx].FracSol - FSold;
@@ -769,7 +630,7 @@ Csim2d::solve2d(void)
 					anis = 0;
 					co   = 0;
 				}
-				// use simple phase field without theta-phase contributions 
+				// use simple phase field without theta-phase contributions
 				if ( type == 1 ) {
 					FSNew += anis;
 					FSNew += poly * (FSold - 0.5) * deltaQR;
@@ -823,7 +684,7 @@ Csim2d::solve2d(void)
 			Index += 2;
 		}
 		// Set boundary 24.06.14, maybe not necessary it is called in main routine
-		// Extruder();
+		Extruder();
 		n++;
 	} while (F_error > d_F && n < .5 * sqrt(Nxy));
 	NF = n;
@@ -867,16 +728,17 @@ Csim2d::solve2d(void)
 
     // calculate fraction solid at middle of the cell edge(x-dir).
 	// this corresponds for arithmetic face-value in Fipy.
-    for (i = 1; i < Nxy; i++) {
+    for (i      = 1; i < Nxy; i++) {
         FSmx[i] = .5 * (FracSolNew[i] + FracSolNew[i-1]);
     }
 
     // calculate fraction solid at middle of the cell edge(y-dir). 
 	// this corresponds for arithmetic face-value in Fipy.
-    for (i = Nx+1; i < Nxy; i++) {
+    for (i      = Nx+1; i < Nxy; i++) {
         FSmy[i] = .5 * (FracSolNew[i] + FracSolNew[i - Nx]);
     }
 
+	//if (type == 2) {
     // calculate phase field for orientation
     // 1. part calculate constants
     Index = (Nx+1);
@@ -945,8 +807,9 @@ Csim2d::solve2d(void)
 				
 			b[Index] = tauTheta * TR * Pbar[Index] * CellInfo[Index].Theta;
 			// added 19.02.14 additional corrections terms
-			//b[Index] += (Cmx[Index + 1]*Dmx[Index + 1] - Cmx[Index]*Dmx[Index] 
-			//	- Cmy[Index] * Dmx[Index] + Cmy[Index + Nx] * Dmy[Index + Nx])*XRQuadrat;
+			// this probably not necessary as Subt operation is used instead
+			//b[Index] += ( Tmx[Index + 1] * Dmx[Index + 1] - Tmx[Index] * Dmx[Index] 
+			//	- Tmy[Index] * Dmx[Index] + Tmy[Index + Nx] * Dmy[Index + Nx] ) * XRQuadrat;
 				
 			Index++;
 		}
@@ -954,7 +817,7 @@ Csim2d::solve2d(void)
 	}
 	ExtrudTh();
 	iccg( ae, aw, an, as, ap, b, Theta, Nx, Ny, maxit, 0, d_T, &NTheta, &T_error );	
-	
+	//}
 	
 	//fprintf(stdout, " T_error: %lf \n", T_error);
 	//exit(-1);
@@ -1142,7 +1005,7 @@ Csim2d::solve2d(void)
 		}
 		ExtrudC();
 		n++;
-	} while (C_error > d_C && n < .5 * sqrt(Nxy));
+	} while (C_error > d_C && n < 5 * sqrt(Nxy));
 	//fprintf(stdout, "#C_E %f %d %f\n", C_error, n, d_C);
 	NC = n;
 	n = 0;

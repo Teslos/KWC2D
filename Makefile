@@ -4,6 +4,7 @@ NAGDIR = /opt/NAG/cllux07db
 MKL = /opt/intel/mkl
 CC = g++ 
 FC = gfortran
+LIBOPT = -L/usr/local/gfortran/lib
 
 SRC = extruder.cc \
 	outcolor.cc \
@@ -11,6 +12,7 @@ SRC = extruder.cc \
 	solve2dnew_iccg.cc  \
 	simmain.cc \
 	nag.cc \
+	iccg.cc \
 	icslap.f \
 	xersla.f \
 	mach.f
@@ -21,6 +23,7 @@ OBJ = extruder.o \
 	solve2dnew_iccg.o    \
 	simmain.o  \
 	nag.o \
+	iccg.o \
 	icslap.o \
 	xersla.o \
 	mach.o

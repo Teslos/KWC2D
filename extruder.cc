@@ -25,7 +25,7 @@ void Csim2d::CpX(int ysrc, int ydst)
         FL[dp] = FL[sp];
 		// 24.06.14 added a new theta field which also goes into phase field equation
         //CellInfo[dp].Theta = CellInfo[sp].Theta;
-        Theta[dp] = Theta[sp];
+        //Theta[dp] = Theta[sp];
         // increase index
         sp++;
         dp++;
@@ -47,7 +47,7 @@ void Csim2d::CpY(int xsrc, int xdst)
         FL[dp] = FL[sp];
 		// 24.06.14 added a new theta field which also goes into phase field equation
         //CellInfo[dp].Theta = CellInfo[sp].Theta;
-        Theta[dp] = Theta[sp];
+        //Theta[dp] = Theta[sp];
         sp += DimInfo->Nx;
         dp += DimInfo->Nx;
     }
