@@ -6,6 +6,12 @@
 using namespace std;
 //#define M_PI 3.14
 
+/**
+ * Initialize the Csim2d class
+ * It first initialize the Cell info class
+ * and then time information and dimensional parameters
+ */
+
 Csim2d::Csim2d()
 {
     CellInfo = new Cell();
@@ -13,6 +19,14 @@ Csim2d::Csim2d()
     DimInfo  = new Dimension();
 }
 
+/**
+ * This function is responsible for setting the particles
+ * in the calculation domain.
+ * \param R radius of the particle in cell units
+ * \param x0 center of the particle in cell units
+ * \param y0 center of the particle in cell units
+ * \param theta0 crystal-orientation of the particle  
+ */ 
 void 
 Csim2d::SetPar(int R, int x0, int y0, float theta0)
 {
@@ -59,6 +73,11 @@ Csim2d::SetPar(int R, int x0, int y0, float theta0)
     }
 }
 
+/**
+ * Initialize the boundary values
+ *
+ *
+ */ 
 int
 Csim2d::InitBound(void)
 {
@@ -121,8 +140,13 @@ Csim2d::InitBound(void)
     return 0;
 }
     
-                
-    
+/**
+ * Function reads the input from the user and
+ * initialize the the region information.
+ *
+ * \param input stream with the input parameters 
+ *
+ */                
 
 int
 Csim2d::InitRegion(istream &input)
@@ -345,6 +369,10 @@ Csim2d::InitRegion(istream &input)
     return 0;
 }
 
+/**
+ * Initialize the dimension class and 
+ * parameters of the class
+ */
 int 
 Csim2d::InitDim(void)
 {
@@ -355,9 +383,11 @@ Csim2d::InitDim(void)
     DimInfo->Nxy = DimInfo->Nx*DimInfo->Ny;
     return 0;
 }
-/// 
-/// Initialize time
-///
+
+/** 
+* Initialize time information and
+* writes them to a output.
+*/
 int
 Csim2d::InitTime(istream &input)
 {
@@ -652,10 +682,11 @@ Csim2d::InitTemperature(void)
     return 0;
 }
 
-//
-// Returns true if stability condition
-// is fullfilled
-//
+/**
+* Ask if the time step is stable
+* \returns Returns true if stability condition
+*          is fullfilled
+*/
 bool
 Csim2d::StabilCond()
 {

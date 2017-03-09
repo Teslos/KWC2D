@@ -1,0 +1,33 @@
+\hypertarget{index_Introduction}{}\section{Introduction}\label{index_Introduction}
+Main function for K\+W\+C2\+D program. This module contains following routines\+:
+
+\section*{Program flow }
+
+
+\begin{DoxyItemize}
+\item Definition of the global variables
+\item Definition of the local variables in main()
+\item Remove of the previous output data
+\item Call to Init\+Region()
+\begin{DoxyItemize}
+\item Geometry data are read\+: how big are cells and how many?
+\item Thermophysical data\+: Specific heat, Conductivity, Latent Heat etc..
+\item Boundary condition\+: Temperature, Fraction Solid, Grain size distribution
+\end{DoxyItemize}
+\item Call to Out\+Simgeo()
+\begin{DoxyItemize}
+\item Write out the .geop data for Postsim visualization
+\end{DoxyItemize}
+\item Call to Init\+Dim()
+\begin{DoxyItemize}
+\item Initialize the dimension structure with different values
+\end{DoxyItemize}
+\item Call to Init\+Time()
+\begin{DoxyItemize}
+\item Initialize all necessary time informations\+: time step, how many timesteps?
+\end{DoxyItemize}
+\item Call to Init\+Cell()
+\begin{DoxyItemize}
+\item Reads values from the Init\+Region and initialize the Cell\+Info with this informations 
+\end{DoxyItemize}
+\end{DoxyItemize}

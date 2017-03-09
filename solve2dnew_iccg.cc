@@ -18,7 +18,7 @@
 #include "bicgstab.h"
 #include "gmres.h"
 #include "cblas.h"
-#include "iccg.h"
+#include "solvers/iccg.h"
 
 #define CGHS     1
 #define BICGSQ   2

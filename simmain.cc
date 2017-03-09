@@ -4,6 +4,35 @@ using namespace std;
 
 Csim2d *csim2d;
 
+/**
+ *  \mainpage Kobayashi-Warren-Carter phase field code
+ *
+ *  \section Introduction 
+ *  
+ * Main function for KWC2D program.
+ * This module contains following routines:
+ *
+ *  Program flow
+ *  ============
+ *    - Definition of the global variables
+ *    - Definition of the local variables in main()
+ *    - Remove of the previous output data
+ *    - Call to InitRegion()
+ *      + Geometry data are read: how big are cells and how many?
+ *      + Thermophysical data: Specific heat, Conductivity, Latent Heat etc..
+ *      + Boundary condition: Temperature, Fraction Solid, Grain size distribution
+ *    - Call to OutSimgeo()
+ *      + Write out the .geop data for Postsim visualization
+ *    - Call to InitDim() 
+ *      + Initialize the dimension structure with different values
+ *    - Call to InitTime()
+ *      + Initialize all necessary time informations: time step, how many timesteps?
+ *    - Call to InitCell()
+ *      + Reads values from the InitRegion and initialize the CellInfo with 
+ *        these informations
+ *    
+ *
+ */
 int 
 main(int argc, char **argv)
 {

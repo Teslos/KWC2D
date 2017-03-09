@@ -1,0 +1,377 @@
+\hypertarget{class_csim2d}{}\section{Csim2d Class Reference}
+\label{class_csim2d}\index{Csim2d@{Csim2d}}
+
+
+{\ttfamily \#include $<$sim2d.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_csim2d_affde4e1f7fe00b6ba92c08288956d451}{Csim2d} ()
+\item 
+\hypertarget{class_csim2d_a1639e23620cbf534b015aa4074adae64}{}\hyperlink{struct_cell}{Cell} $\ast$ {\bfseries get\+Cell\+Info} ()\label{class_csim2d_a1639e23620cbf534b015aa4074adae64}
+
+\item 
+\hypertarget{class_csim2d_a4aac09519369c7945f855aa81274aa66}{}\hyperlink{struct_c_time}{C\+Time} $\ast$ {\bfseries get\+Time\+Info} ()\label{class_csim2d_a4aac09519369c7945f855aa81274aa66}
+
+\item 
+\hypertarget{class_csim2d_ad134d024b0ba921bca6a6ad00314b0d8}{}\hyperlink{struct_dimension}{Dimension} $\ast$ {\bfseries get\+Dimension} ()\label{class_csim2d_ad134d024b0ba921bca6a6ad00314b0d8}
+
+\item 
+\hypertarget{class_csim2d_a1b04e59a196f4736173ed7b6434edbd8}{}void {\bfseries resetv} (void)\label{class_csim2d_a1b04e59a196f4736173ed7b6434edbd8}
+
+\item 
+\hypertarget{class_csim2d_a9e2c634cb9c4edc9da8f637617919653}{}int {\bfseries alloc\+\_\+c} (void)\label{class_csim2d_a9e2c634cb9c4edc9da8f637617919653}
+
+\item 
+\hypertarget{class_csim2d_a31a0f98067ca9cb6780f5fb4db04cbb0}{}void {\bfseries dealloc\+\_\+c} (void)\label{class_csim2d_a31a0f98067ca9cb6780f5fb4db04cbb0}
+
+\item 
+void \hyperlink{class_csim2d_aaf0714ca65dbc0f89ad349c220242d8e}{Set\+Par} (int, int, int, float)
+\item 
+int \hyperlink{class_csim2d_a6e5964558904649d6e3cde3b4ade657f}{Init\+Bound} (void)
+\item 
+int \hyperlink{class_csim2d_a7d7bd87570f84431c5be7ae4830650c2}{Init\+Region} (istream \&)
+\item 
+int \hyperlink{class_csim2d_a4e7b7c3acdb5358acceb203fccc3da9c}{Init\+Time} (istream \&)
+\item 
+int \hyperlink{class_csim2d_a586225befca4c4d557971a6b72242310}{Init\+Temperature} ()
+\item 
+int \hyperlink{class_csim2d_ad752eb0aeedf1094cf2ff4acc3adb17b}{Init\+Cell} (void)
+\item 
+int \hyperlink{class_csim2d_ab9134185e2eedaaa5cf8173c5aed8e42}{Init\+Dim} (void)
+\item 
+bool \hyperlink{class_csim2d_a0a4a41aaf24e7cf6fa8714cff15308bc}{Stabil\+Cond} (void)
+\item 
+\hypertarget{class_csim2d_aa5bc5df66737aa3c43a4f6f7594316ce}{}double {\bfseries Igamma} (double)\label{class_csim2d_aa5bc5df66737aa3c43a4f6f7594316ce}
+
+\item 
+\hypertarget{class_csim2d_af54b2bf65597e1016f646a8870c2b2ff}{}double {\bfseries Agamma} (double)\label{class_csim2d_af54b2bf65597e1016f646a8870c2b2ff}
+
+\item 
+\hypertarget{class_csim2d_a96e18f7614b443b9f97d8f51145194b9}{}double {\bfseries P} (double)\label{class_csim2d_a96e18f7614b443b9f97d8f51145194b9}
+
+\item 
+\hypertarget{class_csim2d_aa41b07a3cb149df55aa347c2ecf54b53}{}double {\bfseries Subt} (double)\label{class_csim2d_aa41b07a3cb149df55aa347c2ecf54b53}
+
+\item 
+\hypertarget{class_csim2d_af1c28e94075c2d3ae1d377ee64a70611}{}double {\bfseries Corr} (double)\label{class_csim2d_af1c28e94075c2d3ae1d377ee64a70611}
+
+\item 
+\hypertarget{class_csim2d_a06eeaecf19558e49c2897002c7f91588}{}void {\bfseries Extruder} (void)\label{class_csim2d_a06eeaecf19558e49c2897002c7f91588}
+
+\item 
+\hypertarget{class_csim2d_a159fdfe2128b9fdbb2e5b66ea4eb55d4}{}void {\bfseries Cp\+X} (int ysrc, int ydst)\label{class_csim2d_a159fdfe2128b9fdbb2e5b66ea4eb55d4}
+
+\item 
+\hypertarget{class_csim2d_a8cc12b557deb0a6d5f0f3eb98619e782}{}void {\bfseries Cp\+Y} (int xsrc, int xdst)\label{class_csim2d_a8cc12b557deb0a6d5f0f3eb98619e782}
+
+\item 
+\hypertarget{class_csim2d_aa33763218021148a1b597a7166557c7d}{}void {\bfseries cp\+F\+L} (int xsrc, int xdst)\label{class_csim2d_aa33763218021148a1b597a7166557c7d}
+
+\item 
+\hypertarget{class_csim2d_af2ed177504e2d4ccd4834cfda30ac5da}{}void {\bfseries Extrud\+V} (void)\label{class_csim2d_af2ed177504e2d4ccd4834cfda30ac5da}
+
+\item 
+\hypertarget{class_csim2d_a1c6e0902cc3d0f76443ca210f00de1a7}{}void {\bfseries Cp\+X\+V} (int ysrc, int ydst)\label{class_csim2d_a1c6e0902cc3d0f76443ca210f00de1a7}
+
+\item 
+\hypertarget{class_csim2d_aaa1ce4c720c0ffc180ada6f290e06414}{}void {\bfseries Cp\+Y\+V} (int xsrc, int xdst)\label{class_csim2d_aaa1ce4c720c0ffc180ada6f290e06414}
+
+\item 
+\hypertarget{class_csim2d_a6d54c4c252e5e72854e2208849c11d70}{}void {\bfseries Extrud\+D} (void)\label{class_csim2d_a6d54c4c252e5e72854e2208849c11d70}
+
+\item 
+\hypertarget{class_csim2d_af3800fda9fad83b63c234fa7277f2ceb}{}void {\bfseries Cp\+X\+D} (int ysrc, int ydst)\label{class_csim2d_af3800fda9fad83b63c234fa7277f2ceb}
+
+\item 
+\hypertarget{class_csim2d_a28de618c883fcc5f1392dc98a5c52a0a}{}void {\bfseries Cp\+Y\+D} (int xsrc, int xdst)\label{class_csim2d_a28de618c883fcc5f1392dc98a5c52a0a}
+
+\item 
+\hypertarget{class_csim2d_a309f4fa30df24b31807593a68595c3c2}{}void {\bfseries Extrud\+P} (void)\label{class_csim2d_a309f4fa30df24b31807593a68595c3c2}
+
+\item 
+\hypertarget{class_csim2d_aebbca0a71beb99f509f229e5c0db9715}{}void {\bfseries Cp\+X\+P} (int ysrc, int ydst)\label{class_csim2d_aebbca0a71beb99f509f229e5c0db9715}
+
+\item 
+\hypertarget{class_csim2d_ab9b1133d2f33a60e209d7efb52b4ca14}{}void {\bfseries Cp\+Y\+P} (int xsrc, int xdst)\label{class_csim2d_ab9b1133d2f33a60e209d7efb52b4ca14}
+
+\item 
+\hypertarget{class_csim2d_aae627e309ff878067c82698c7277a154}{}void {\bfseries Extrud\+Pn} (void)\label{class_csim2d_aae627e309ff878067c82698c7277a154}
+
+\item 
+\hypertarget{class_csim2d_a88541e9ecb406b566923d1d0c4a4477b}{}void {\bfseries Cp\+X\+Pn} (int ysrc, int ydst)\label{class_csim2d_a88541e9ecb406b566923d1d0c4a4477b}
+
+\item 
+\hypertarget{class_csim2d_a31c10e0be11217c5f22f041e9f6b8518}{}void {\bfseries Cp\+Y\+Pn} (int xsrc, int xdst)\label{class_csim2d_a31c10e0be11217c5f22f041e9f6b8518}
+
+\item 
+\hypertarget{class_csim2d_ae21bfae4ed41c93112016a8cdf7bdd62}{}void {\bfseries Extrud\+C} (void)\label{class_csim2d_ae21bfae4ed41c93112016a8cdf7bdd62}
+
+\item 
+\hypertarget{class_csim2d_a9164981f31eda1608a0a23e5df28368a}{}void {\bfseries Cp\+X\+C} (int ysrc, int ydst)\label{class_csim2d_a9164981f31eda1608a0a23e5df28368a}
+
+\item 
+\hypertarget{class_csim2d_aa3ab12c96864c6029c2a0f92fe083f47}{}void {\bfseries Cp\+X\+C1} (int ysrc, int ydst)\label{class_csim2d_aa3ab12c96864c6029c2a0f92fe083f47}
+
+\item 
+\hypertarget{class_csim2d_ab2e4adb19428feb8ada7642852f15b67}{}void {\bfseries Cp\+Y\+C} (int xsrc, int xdst)\label{class_csim2d_ab2e4adb19428feb8ada7642852f15b67}
+
+\item 
+\hypertarget{class_csim2d_afca8c838d5768cb137df702b001644dc}{}void {\bfseries Extrud\+D\+F\+S} (void)\label{class_csim2d_afca8c838d5768cb137df702b001644dc}
+
+\item 
+\hypertarget{class_csim2d_a7cbefbe9a3551f1415e87846922c303e}{}void {\bfseries Cp\+X\+D\+F\+S} (int ysrc, int ydst)\label{class_csim2d_a7cbefbe9a3551f1415e87846922c303e}
+
+\item 
+\hypertarget{class_csim2d_a054adb9c30f7ebe9a8bed02aedb4536f}{}void {\bfseries Cp\+Y\+D\+F\+S} (int xsrc, int xdst)\label{class_csim2d_a054adb9c30f7ebe9a8bed02aedb4536f}
+
+\item 
+\hypertarget{class_csim2d_ad8a568bb6bc47ba1ab1822df9f66382f}{}void {\bfseries Extrud\+Th} (void)\label{class_csim2d_ad8a568bb6bc47ba1ab1822df9f66382f}
+
+\item 
+\hypertarget{class_csim2d_a16f42ca0caf4e85ac4b2187acb0ec94d}{}void {\bfseries Cp\+Th\+X} (int ysrc, int ydst)\label{class_csim2d_a16f42ca0caf4e85ac4b2187acb0ec94d}
+
+\item 
+\hypertarget{class_csim2d_a26e30a05894ceaed5b6693ee1954f137}{}void {\bfseries Cp\+Th\+Y} (int xsrc, int ydst)\label{class_csim2d_a26e30a05894ceaed5b6693ee1954f137}
+
+\item 
+\hypertarget{class_csim2d_a82ace4dca7a17fb162cc11d84793bfcb}{}int {\bfseries solve2d} ()\label{class_csim2d_a82ace4dca7a17fb162cc11d84793bfcb}
+
+\item 
+\hypertarget{class_csim2d_a51a09fa6ed9cbc3fedf1a24a31e3206f}{}int {\bfseries Out\+Contr} (int)\label{class_csim2d_a51a09fa6ed9cbc3fedf1a24a31e3206f}
+
+\item 
+\hypertarget{class_csim2d_a64cfc23f2295fbcd3d492523faeebd17}{}int {\bfseries Out\+Tmpp} (int)\label{class_csim2d_a64cfc23f2295fbcd3d492523faeebd17}
+
+\item 
+\hypertarget{class_csim2d_a9a7830563be4ba170cbab3041b4dc54c}{}int {\bfseries Out\+Simgeo} (void)\label{class_csim2d_a9a7830563be4ba170cbab3041b4dc54c}
+
+\item 
+\hypertarget{class_csim2d_a27e5435d65fea623f164ea015e206003}{}int {\bfseries Out\+Mathematica} (int)\label{class_csim2d_a27e5435d65fea623f164ea015e206003}
+
+\item 
+\hypertarget{class_csim2d_a294c5ebcad052ebc752a56a74cc4fcce}{}void {\bfseries Out\+Conv} (void)\label{class_csim2d_a294c5ebcad052ebc752a56a74cc4fcce}
+
+\item 
+\hypertarget{class_csim2d_ac69493c72090bc81b13c7aa7f36fff33}{}int {\bfseries Out\+Coeff} (void)\label{class_csim2d_ac69493c72090bc81b13c7aa7f36fff33}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_csim2d_a39a537a7da76e3f708ef3d125092277e}{}float $\ast$ {\bfseries Frac\+Sol\+New}\label{class_csim2d_a39a537a7da76e3f708ef3d125092277e}
+
+\item 
+\hypertarget{class_csim2d_ae77d4e4cbe4566351d2278e9845c5ff0}{}float $\ast$ {\bfseries F\+Sold}\label{class_csim2d_ae77d4e4cbe4566351d2278e9845c5ff0}
+
+\item 
+\hypertarget{class_csim2d_a475d27b534733d8706c3ee2d43b27ee0}{}float $\ast$ {\bfseries Conc\+New}\label{class_csim2d_a475d27b534733d8706c3ee2d43b27ee0}
+
+\item 
+\hypertarget{class_csim2d_a49f80e1620f6d8268ca3fbded294249f}{}float $\ast$ {\bfseries F\+L}\label{class_csim2d_a49f80e1620f6d8268ca3fbded294249f}
+
+\item 
+\hypertarget{class_csim2d_a74f4724bcefb25b97feb26d78b5960ca}{}float $\ast$ {\bfseries F\+Lmx}\label{class_csim2d_a74f4724bcefb25b97feb26d78b5960ca}
+
+\item 
+\hypertarget{class_csim2d_a1b9dad7ce0bf1ffe46bd3935a4f45c13}{}float $\ast$ {\bfseries F\+Lmy}\label{class_csim2d_a1b9dad7ce0bf1ffe46bd3935a4f45c13}
+
+\item 
+\hypertarget{class_csim2d_a268799d7669f0b495d3d30e22d229384}{}float $\ast$ {\bfseries F\+Smx}\label{class_csim2d_a268799d7669f0b495d3d30e22d229384}
+
+\item 
+\hypertarget{class_csim2d_afadcfa5a204348384205bf07b62d1d77}{}float $\ast$ {\bfseries F\+Smy}\label{class_csim2d_afadcfa5a204348384205bf07b62d1d77}
+
+\item 
+\hypertarget{class_csim2d_a2abd153a15df0d52d9a966277102a720}{}double $\ast$ {\bfseries Theta}\label{class_csim2d_a2abd153a15df0d52d9a966277102a720}
+
+\item 
+\hypertarget{class_csim2d_a488ba0ff3717be9d504f5e5d2be99205}{}double $\ast$ {\bfseries T\+\_\+over}\label{class_csim2d_a488ba0ff3717be9d504f5e5d2be99205}
+
+\item 
+\hypertarget{class_csim2d_acad7213d2f70a6ea4ec7022715955791}{}double $\ast$ {\bfseries Dmbar}\label{class_csim2d_acad7213d2f70a6ea4ec7022715955791}
+
+\item 
+\hypertarget{class_csim2d_a7c28ed15f2b37818229cae2d71d9be62}{}double $\ast$ {\bfseries Pbar}\label{class_csim2d_a7c28ed15f2b37818229cae2d71d9be62}
+
+\item 
+\hypertarget{class_csim2d_a79f443dd53490940b25205d2c30ba0ee}{}float $\ast$ {\bfseries theta\+\_\+over}\label{class_csim2d_a79f443dd53490940b25205d2c30ba0ee}
+
+\item 
+\hypertarget{class_csim2d_aff8a10191e182eb69812859a88109213}{}double $\ast$ {\bfseries Tmx}\label{class_csim2d_aff8a10191e182eb69812859a88109213}
+
+\item 
+\hypertarget{class_csim2d_af9278406b4229e6976b5c9394838f36f}{}double $\ast$ {\bfseries Tmy}\label{class_csim2d_af9278406b4229e6976b5c9394838f36f}
+
+\item 
+\hypertarget{class_csim2d_af4264414bf747219d046eefe699fc272}{}double $\ast$ {\bfseries Cmx}\label{class_csim2d_af4264414bf747219d046eefe699fc272}
+
+\item 
+\hypertarget{class_csim2d_aa9e9016995e629b895ac84aba0b5fad5}{}double $\ast$ {\bfseries Cmy}\label{class_csim2d_aa9e9016995e629b895ac84aba0b5fad5}
+
+\item 
+\hypertarget{class_csim2d_a7ea7fbed7d2d6bc5b5b4151bd590303e}{}double $\ast$ {\bfseries Dmx}\label{class_csim2d_a7ea7fbed7d2d6bc5b5b4151bd590303e}
+
+\item 
+\hypertarget{class_csim2d_a11395ebf0d7c7b5c722ba3c2aad338d5}{}double $\ast$ {\bfseries Dmy}\label{class_csim2d_a11395ebf0d7c7b5c722ba3c2aad338d5}
+
+\item 
+\hypertarget{class_csim2d_a8f286b331df1243d9bedc1d704beb868}{}float $\ast$ {\bfseries R\+X}\label{class_csim2d_a8f286b331df1243d9bedc1d704beb868}
+
+\item 
+\hypertarget{class_csim2d_aa4a2cb678f0edd5bc3a0b7153f1d6bea}{}float $\ast$ {\bfseries R\+Y}\label{class_csim2d_aa4a2cb678f0edd5bc3a0b7153f1d6bea}
+
+\item 
+\hypertarget{class_csim2d_ad98ee2498dfe76c8a73e6335da906f5e}{}float $\ast$ {\bfseries R\+P}\label{class_csim2d_ad98ee2498dfe76c8a73e6335da906f5e}
+
+\item 
+\hypertarget{class_csim2d_a0ffd61ed9e92291fe7386a7beed0e4f7}{}float $\ast$ {\bfseries R\+Px}\label{class_csim2d_a0ffd61ed9e92291fe7386a7beed0e4f7}
+
+\item 
+\hypertarget{class_csim2d_af9e9c56acbc9895f685a45674db10653}{}float $\ast$ {\bfseries R\+Py}\label{class_csim2d_af9e9c56acbc9895f685a45674db10653}
+
+\item 
+\hypertarget{class_csim2d_ade50ec8fc0251ee5c9c4cfb137d37987}{}float $\ast$ {\bfseries P\+New}\label{class_csim2d_ade50ec8fc0251ee5c9c4cfb137d37987}
+
+\item 
+\hypertarget{class_csim2d_a4eec820c15b6cd725a2893dabf49c8a6}{}float $\ast$ {\bfseries Vx\+New}\label{class_csim2d_a4eec820c15b6cd725a2893dabf49c8a6}
+
+\item 
+\hypertarget{class_csim2d_a01fc9f350b00832256dc38abe9e9f0e6}{}float $\ast$ {\bfseries Vy\+New}\label{class_csim2d_a01fc9f350b00832256dc38abe9e9f0e6}
+
+\item 
+\hypertarget{class_csim2d_af29919ff8a43599ec1b89074a7d516e3}{}float $\ast$ {\bfseries V\+X\+Z}\label{class_csim2d_af29919ff8a43599ec1b89074a7d516e3}
+
+\item 
+\hypertarget{class_csim2d_ad8ce4e63a9dc75a420128bb51259c151}{}float $\ast$ {\bfseries V\+Y\+Z}\label{class_csim2d_ad8ce4e63a9dc75a420128bb51259c151}
+
+\item 
+\hypertarget{class_csim2d_a43c131d20661b6d950635dc4d53e75f1}{}float $\ast$ {\bfseries D\+I\+V}\label{class_csim2d_a43c131d20661b6d950635dc4d53e75f1}
+
+\item 
+\hypertarget{class_csim2d_a8f25d9e662cf101e5352e56b10653b25}{}float $\ast$ {\bfseries K\+Konv}\label{class_csim2d_a8f25d9e662cf101e5352e56b10653b25}
+
+\item 
+\hypertarget{class_csim2d_a431fb7a1db65c07ee46ef6f2831530aa}{}float $\ast$ {\bfseries Dbar}\label{class_csim2d_a431fb7a1db65c07ee46ef6f2831530aa}
+
+\item 
+\hypertarget{class_csim2d_a914eb5f3c05ab6d934d59542774b9d55}{}float $\ast$ {\bfseries oneminus}\label{class_csim2d_a914eb5f3c05ab6d934d59542774b9d55}
+
+\item 
+\hypertarget{class_csim2d_ae6bf9a7f7eef1d5aef946bf4d9e12335}{}float $\ast$ {\bfseries C\+\_\+over}\label{class_csim2d_ae6bf9a7f7eef1d5aef946bf4d9e12335}
+
+\item 
+\hypertarget{class_csim2d_add08ac2ec959050167b56ce717f97201}{}float $\ast$ {\bfseries D\+\_\+\+F\+S}\label{class_csim2d_add08ac2ec959050167b56ce717f97201}
+
+\item 
+\hypertarget{class_csim2d_a896754a9901492c4ac9f91bdea5ff172}{}float {\bfseries A\+L\+P\+H\+A}\label{class_csim2d_a896754a9901492c4ac9f91bdea5ff172}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class contains all simulation parameters information about dimension of the problem number of cells in x,y,z direction. 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_csim2d_affde4e1f7fe00b6ba92c08288956d451}{}\index{Csim2d@{Csim2d}!Csim2d@{Csim2d}}
+\index{Csim2d@{Csim2d}!Csim2d@{Csim2d}}
+\subsubsection[{Csim2d()}]{\setlength{\rightskip}{0pt plus 5cm}Csim2d\+::\+Csim2d (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{class_csim2d_affde4e1f7fe00b6ba92c08288956d451}
+Initialize the \hyperlink{class_csim2d}{Csim2d} class It first initialize the \hyperlink{struct_cell}{Cell} info class and then time information and dimensional parameters 
+
+\subsection{Member Function Documentation}
+\hypertarget{class_csim2d_a6e5964558904649d6e3cde3b4ade657f}{}\index{Csim2d@{Csim2d}!Init\+Bound@{Init\+Bound}}
+\index{Init\+Bound@{Init\+Bound}!Csim2d@{Csim2d}}
+\subsubsection[{Init\+Bound(void)}]{\setlength{\rightskip}{0pt plus 5cm}int Csim2d\+::\+Init\+Bound (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\label{class_csim2d_a6e5964558904649d6e3cde3b4ade657f}
+Initialize the boundary values \hypertarget{class_csim2d_ad752eb0aeedf1094cf2ff4acc3adb17b}{}\index{Csim2d@{Csim2d}!Init\+Cell@{Init\+Cell}}
+\index{Init\+Cell@{Init\+Cell}!Csim2d@{Csim2d}}
+\subsubsection[{Init\+Cell(void)}]{\setlength{\rightskip}{0pt plus 5cm}int Csim2d\+::\+Init\+Cell (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\label{class_csim2d_ad752eb0aeedf1094cf2ff4acc3adb17b}
+Initialize cell \hypertarget{class_csim2d_ab9134185e2eedaaa5cf8173c5aed8e42}{}\index{Csim2d@{Csim2d}!Init\+Dim@{Init\+Dim}}
+\index{Init\+Dim@{Init\+Dim}!Csim2d@{Csim2d}}
+\subsubsection[{Init\+Dim(void)}]{\setlength{\rightskip}{0pt plus 5cm}int Csim2d\+::\+Init\+Dim (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\label{class_csim2d_ab9134185e2eedaaa5cf8173c5aed8e42}
+Initialize the dimension class and parameters of the class \hypertarget{class_csim2d_a7d7bd87570f84431c5be7ae4830650c2}{}\index{Csim2d@{Csim2d}!Init\+Region@{Init\+Region}}
+\index{Init\+Region@{Init\+Region}!Csim2d@{Csim2d}}
+\subsubsection[{Init\+Region(istream \&)}]{\setlength{\rightskip}{0pt plus 5cm}int Csim2d\+::\+Init\+Region (
+\begin{DoxyParamCaption}
+\item[{istream \&}]{input}
+\end{DoxyParamCaption}
+)}\label{class_csim2d_a7d7bd87570f84431c5be7ae4830650c2}
+Function reads the input from the user and initialize the the region information.
+
+
+\begin{DoxyParams}{Parameters}
+{\em input} & stream with the input parameters \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_csim2d_a586225befca4c4d557971a6b72242310}{}\index{Csim2d@{Csim2d}!Init\+Temperature@{Init\+Temperature}}
+\index{Init\+Temperature@{Init\+Temperature}!Csim2d@{Csim2d}}
+\subsubsection[{Init\+Temperature()}]{\setlength{\rightskip}{0pt plus 5cm}int Csim2d\+::\+Init\+Temperature (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\label{class_csim2d_a586225befca4c4d557971a6b72242310}
+initialize temperature \hypertarget{class_csim2d_a4e7b7c3acdb5358acceb203fccc3da9c}{}\index{Csim2d@{Csim2d}!Init\+Time@{Init\+Time}}
+\index{Init\+Time@{Init\+Time}!Csim2d@{Csim2d}}
+\subsubsection[{Init\+Time(istream \&)}]{\setlength{\rightskip}{0pt plus 5cm}int Csim2d\+::\+Init\+Time (
+\begin{DoxyParamCaption}
+\item[{istream \&}]{input}
+\end{DoxyParamCaption}
+)}\label{class_csim2d_a4e7b7c3acdb5358acceb203fccc3da9c}
+Initialize time information and writes them to a output. \hypertarget{class_csim2d_aaf0714ca65dbc0f89ad349c220242d8e}{}\index{Csim2d@{Csim2d}!Set\+Par@{Set\+Par}}
+\index{Set\+Par@{Set\+Par}!Csim2d@{Csim2d}}
+\subsubsection[{Set\+Par(int, int, int, float)}]{\setlength{\rightskip}{0pt plus 5cm}void Csim2d\+::\+Set\+Par (
+\begin{DoxyParamCaption}
+\item[{int}]{R, }
+\item[{int}]{x0, }
+\item[{int}]{y0, }
+\item[{float}]{theta0}
+\end{DoxyParamCaption}
+)}\label{class_csim2d_aaf0714ca65dbc0f89ad349c220242d8e}
+This function is responsible for setting the particles in the calculation domain. 
+\begin{DoxyParams}{Parameters}
+{\em R} & radius of the particle in cell units \\
+\hline
+{\em x0} & center of the particle in cell units \\
+\hline
+{\em y0} & center of the particle in cell units \\
+\hline
+{\em theta0} & crystal-\/orientation of the particle \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_csim2d_a0a4a41aaf24e7cf6fa8714cff15308bc}{}\index{Csim2d@{Csim2d}!Stabil\+Cond@{Stabil\+Cond}}
+\index{Stabil\+Cond@{Stabil\+Cond}!Csim2d@{Csim2d}}
+\subsubsection[{Stabil\+Cond(void)}]{\setlength{\rightskip}{0pt plus 5cm}bool Csim2d\+::\+Stabil\+Cond (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\label{class_csim2d_a0a4a41aaf24e7cf6fa8714cff15308bc}
+Ask if the time step is stable \begin{DoxyReturn}{Returns}
+Returns true if stability condition is fullfilled 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+sim2d.\+h\item 
+extruder.\+cc\item 
+outcolor.\+cc\item 
+sim2d.\+cc\item 
+solve2d.\+cc\item 
+solve2dnew.\+cc\item 
+solve2dnew\+\_\+iccg.\+cc\end{DoxyCompactItemize}
