@@ -11,22 +11,12 @@ SRC = extruder.cc \
 	sim2d.cc    \
 	solve2dnew_iccg.cc  \
 	simmain.cc \
-	nag.cc \
-	iccg.cc \
-	icslap.f \
-	xersla.f \
-	mach.f
 
 OBJ = extruder.o \
 	outcolor.o   \
 	sim2d.o      \
 	solve2dnew_iccg.o    \
 	simmain.o  \
-	nag.o \
-	iccg.o \
-	icslap.o \
-	xersla.o \
-	mach.o
 
 
 HEADERS = sim2d.h
@@ -38,10 +28,15 @@ FFLAGS = -g -c -cpp
 #LIBOPT = -L$(NAGDIR) 
 # Options for Linux
 #CFLAGS = -O2 -c 
-
+LIBSOLVE = solvers/libsolve.a \
+	   solvers/libslap.a
 #LIB = -lc -lnagc-mkl -lpthread -lm -lblas 
-LIB = -lc -lpthread -lm -lblas -lgfortran ./libslap.a
+LIB = -lc -lpthread -lm -lblas -lgfortran $(LIBSOLVE)
 
+all:
+	make -C solvers
+	make $(RUNFILE)
+	
 $(RUNFILE) : $(HEADERS) $(OBJ)
 	$(CC) $(LIBOPT) -g $(OBJ) -o $(RUNFILE) $(LIB)
 
@@ -55,14 +50,6 @@ solve2dnew_iccg.o: solve2dnew_iccg.cc
 	$(CC) $(CFLAGS) $<
 simmain.o: simmain.cc
 	$(CC) $(CFLAGS) $<
-nag.o: nag.cc
-	$(CC) $(CFLAGS) $<
-icslap.o: icslap.f
-	$(FC) $(FFLAGS) $<
-xersla.o: xersla.f
-	$(FC) $(FFLAGS) $<
-mach.o: mach.f
-	$(FC) $(FFLAGS) $<
 
 clean:
 	rm -f $(OBJ) sim
