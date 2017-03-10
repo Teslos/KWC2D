@@ -11,7 +11,14 @@ enum FileType {FULL=0, GRID=1, SOLUTION=2};
 //{
 //
 //}
-int Csim2d::OutTec(int tstep)
+
+/**
+ * This function writes the solution to tecplot
+ * \param tstep time step of the solution to write.
+ *
+ */
+int 
+Csim2d::OutTec(int tstep)
 {
 	char num[25];
 	char name[255];

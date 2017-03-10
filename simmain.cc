@@ -1,3 +1,4 @@
+// vim: noai:ts=4:sw=4
 #include <cstdlib>
 #include "sim2d.h"
 using namespace std;
